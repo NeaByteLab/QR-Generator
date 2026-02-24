@@ -1,0 +1,74 @@
+{
+  "name": "@neabyte/qr-generator",
+  "version": "0.1.0",
+  "description": "QR code SVG generator with custom shapes, gradients, logo",
+  "type": "module",
+  "main": "dist/index.cjs",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "require": "./dist/index.cjs",
+      "import": "./dist/index.mjs",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "unbuild --minify",
+    "clean": "rm -rf dist",
+    "prepublishOnly": "rm -rf dist && npm run build"
+  },
+  "keywords": [
+    "qr",
+    "qrcode",
+    "qr-code",
+    "svg",
+    "generator",
+    "logo",
+    "gradient",
+    "linear-gradient",
+    "radial-gradient",
+    "shapes",
+    "custom-shapes",
+    "typescript",
+    "barcode",
+    "encode",
+    "vector",
+    "error-correction",
+    "finder-pattern",
+    "module-shape",
+    "overlay",
+    "utils"
+  ],
+  "dependencies": {
+    "qrcode": "^1.5.4"
+  },
+  "devDependencies": {
+    "unbuild": "^3.6.1"
+  },
+  "author": {
+    "name": "NeaByteLab",
+    "email": "me@neabyte.com",
+    "url": "https://github.com/NeaByteLab"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/NeaByteLab/QR-Generator.git"
+  },
+  "bugs": {
+    "url": "https://github.com/NeaByteLab/QR-Generator/issues"
+  },
+  "homepage": "https://github.com/NeaByteLab/QR-Generator#readme",
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "files": [
+    "dist/**/*",
+    "README.md",
+    "LICENSE"
+  ],
+  "publishConfig": {
+    "access": "public"
+  }
+}
