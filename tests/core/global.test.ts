@@ -1,4 +1,4 @@
-import { assertEquals } from '@std/assert'
+import { assert, assertEquals } from '@std/assert'
 import * as Helpers from '@app/core/helpers/index.ts'
 
 Deno.test('Global.QRError - L M Q H levels', () => {
@@ -24,4 +24,10 @@ Deno.test('Global.QRMode - mode bits match JIS', () => {
   assertEquals(Helpers.Global.QRMode.MODE_ALPHA_NUM, 2)
   assertEquals(Helpers.Global.QRMode.MODE_8BIT_BYTE, 4)
   assertEquals(Helpers.Global.QRMode.MODE_KANJI, 8)
+})
+
+Deno.test('Global.Default - null and trial/final run flags', () => {
+  assertEquals(Helpers.Global.Default.encodedDataCache, null)
+  assert(Helpers.Global.Default.trialRun)
+  assert(!Helpers.Global.Default.finalRun)
 })

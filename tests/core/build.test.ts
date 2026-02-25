@@ -2,17 +2,15 @@ import { assert, assertEquals } from '@std/assert'
 import * as Helpers from '@app/core/helpers/index.ts'
 
 const stringToBytes = Helpers.Byte.stringToBytes
-const testRun = true
 
 Deno.test('Build.buildMatrix - encodedDataCache reused when provided', () => {
-  const finalRun = false
   const seg = Helpers.Encode.encode('x', 'Byte', stringToBytes)
   const result1 = Helpers.Build.buildMatrix(
     1,
     Helpers.Global.QRError['L'],
     [seg],
-    null,
-    finalRun,
+    Helpers.Global.Default.encodedDataCache,
+    Helpers.Global.Default.finalRun,
     0
   )
   const cache = result1.encodedDataCache
@@ -22,7 +20,7 @@ Deno.test('Build.buildMatrix - encodedDataCache reused when provided', () => {
     Helpers.Global.QRError['L'],
     [seg],
     cache,
-    finalRun,
+    Helpers.Global.Default.finalRun,
     0
   )
   assert(result2.encodedDataCache === cache)
@@ -30,7 +28,14 @@ Deno.test('Build.buildMatrix - encodedDataCache reused when provided', () => {
 
 Deno.test('Build.buildMatrix - finder patterns at corners', () => {
   const seg = Helpers.Encode.encode('x', 'Byte', stringToBytes)
-  const result = Helpers.Build.buildMatrix(1, Helpers.Global.QRError['L'], [seg], null, testRun, 0)
+  const result = Helpers.Build.buildMatrix(
+    1,
+    Helpers.Global.QRError['L'],
+    [seg],
+    Helpers.Global.Default.encodedDataCache,
+    Helpers.Global.Default.trialRun,
+    0
+  )
   const g = result.moduleGrid
   const r0 = g[0]
   const r6 = g[6]
@@ -44,7 +49,14 @@ Deno.test('Build.buildMatrix - finder patterns at corners', () => {
 
 Deno.test('Build.buildMatrix - timing pattern on row and col 6', () => {
   const seg = Helpers.Encode.encode('x', 'Byte', stringToBytes)
-  const result = Helpers.Build.buildMatrix(1, Helpers.Global.QRError['L'], [seg], null, testRun, 0)
+  const result = Helpers.Build.buildMatrix(
+    1,
+    Helpers.Global.QRError['L'],
+    [seg],
+    Helpers.Global.Default.encodedDataCache,
+    Helpers.Global.Default.trialRun,
+    0
+  )
   const g = result.moduleGrid
   const n = result.moduleCountValue
   const row6 = g[6]
@@ -62,7 +74,14 @@ Deno.test('Build.buildMatrix - timing pattern on row and col 6', () => {
 
 Deno.test('Build.buildMatrix - version 1 produces 21x21 grid', () => {
   const seg = Helpers.Encode.encode('A', 'Byte', stringToBytes)
-  const result = Helpers.Build.buildMatrix(1, Helpers.Global.QRError['L'], [seg], null, testRun, 0)
+  const result = Helpers.Build.buildMatrix(
+    1,
+    Helpers.Global.QRError['L'],
+    [seg],
+    Helpers.Global.Default.encodedDataCache,
+    Helpers.Global.Default.trialRun,
+    0
+  )
   assertEquals(result.moduleCountValue, 21)
   assert(result.moduleGrid.length === 21)
   const row0 = result.moduleGrid[0]
@@ -71,6 +90,13 @@ Deno.test('Build.buildMatrix - version 1 produces 21x21 grid', () => {
 
 Deno.test('Build.buildMatrix - version 2 produces 25x25', () => {
   const seg = Helpers.Encode.encode('AB', 'Byte', stringToBytes)
-  const result = Helpers.Build.buildMatrix(2, Helpers.Global.QRError['L'], [seg], null, testRun, 0)
+  const result = Helpers.Build.buildMatrix(
+    2,
+    Helpers.Global.QRError['L'],
+    [seg],
+    Helpers.Global.Default.encodedDataCache,
+    Helpers.Global.Default.trialRun,
+    0
+  )
   assertEquals(result.moduleCountValue, 25)
 })

@@ -162,8 +162,8 @@ export interface QRCodeExport {
  * @description Build and finalize QR matrix.
  */
 export interface QRCodeInput {
-  /** Append data with encoding mode */
-  addData(data: string, mode: QREncodeMode): void
+  /** Append data with encoding mode ('' defaults to Byte) */
+  addData(data: string, mode: QREncodeMode | ''): void
   /** Build matrix and choose mask */
   make(): void
 }
@@ -186,6 +186,9 @@ export type QREncodeMode = 'Numeric' | 'Alphanumeric' | 'Byte' | 'Kanji'
 
 /** Error correction levels L/M/Q/H. */
 export type QRErrorLevel = 'L' | 'M' | 'Q' | 'H'
+
+/** Error level name to index (L/M/Q/H → 0..3 for RS block table). */
+export type QRErrorIndexMap = Record<QRErrorLevel, number>
 
 /**
  * QR module grid read API.
