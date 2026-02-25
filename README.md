@@ -1,27 +1,34 @@
+<div align="center">
+
 # QR Generator
+
+Generate QR codes as SVG, path, GIF, PNG, ASCII, or canvas with custom shapes, gradients, and logo.
+
+[![Node](https://img.shields.io/badge/node-%3E%3D20-339933?logo=node.js&logoColor=white)](https://nodejs.org) [![Deno](https://img.shields.io/badge/deno-compatible-ffcb00?logo=deno&logoColor=000000)](https://deno.com) [![Bun](https://img.shields.io/badge/bun-compatible-f9f1e1?logo=bun&logoColor=000000)](https://bun.sh) [![Browser](https://img.shields.io/badge/browser-compatible-4285F4?logo=googlechrome&logoColor=white)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
 
 [![Module type: Deno/ESM](https://img.shields.io/badge/module%20type-deno%2Fesm-brightgreen)](https://github.com/NeaByteLab/QR-Generator) [![npm version](https://img.shields.io/npm/v/@neabyte/qr-generator.svg)](https://www.npmjs.org/package/@neabyte/qr-generator) [![JSR](https://jsr.io/badges/@neabyte/qr-generator)](https://jsr.io/@neabyte/qr-generator) [![CI](https://github.com/NeaByteLab/QR-Generator/actions/workflows/ci.yaml/badge.svg)](https://github.com/NeaByteLab/QR-Generator/actions/workflows/ci.yaml) [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-Generate QR as SVG, path, GIF, ASCII, or canvas. Seven shapes (rounded, circle, diamond, square, shuriken, star, triangle), finder styling, solid or linear/radial gradients, logo (text/image). Deno (JSR) and npm.
-
-**Prerequisites:** For **Deno** use [Deno](https://deno.com/) (install from [deno.com](https://deno.com/)). For **npm** use Node.js (e.g. [nodejs.org](https://nodejs.org/)).
-
-|                 No logo                  |                  Text logo                   |                 Variant                  |
+|                 No Logo                  |                  Text Logo                   |                 Variant                  |
 | :--------------------------------------: | :------------------------------------------: | :--------------------------------------: |
-| ![no logo](./preview/qrcode-no-logo.gif) | ![text logo](./preview/qrcode-text-logo.gif) | ![variant](./preview/qrcode-variant.gif) |
+| ![No Logo](./preview/qrcode-no-logo.gif) | ![Text Logo](./preview/qrcode-text-logo.gif) | ![Variant](./preview/qrcode-variant.gif) |
+
+</div>
 
 > [!IMPORTANT]
 > Generate preview assets (SVGs; GIFs if `rsvg-convert` is installed): `deno run -A preview/generator.ts`
 
 ## Features
 
-- **Multiple output formats** — SVG string (`toSVG`), raw path data (`toPath`), GIF data URL (`toDataURL`), ASCII art (`toASCII`), table/img HTML (`toTableTag`, `toImgTag`), and canvas rendering (`toCanvas`).
+- **Multiple output formats** — SVG string (`toSVG`), raw path data (`toPath`), GIF data URL (`toDataURL`), PNG data URL (`toPNG`), ASCII art (`toASCII`), table/img HTML (`toTableTag`, `toImgTag`), and canvas rendering (`toCanvas`).
 - **Finder pattern styling** — Separate shape and gap for the three corner finder patterns.
 - **Custom module shapes** — Rounded, circle, diamond, square, shuriken, star, triangle; configurable gap.
 - **Color options** — Solid color or linear/radial gradients with full control over stops and geometry.
 - **Center logo** — Text or image overlay with size and corner radius; SVG output escapes attributes.
 
 ## Installation
+
+> [!NOTE]
+> **Prerequisites:** For **Deno** (install from [deno.com](https://deno.com/)). For **npm** use Node.js (e.g. [nodejs.org](https://nodejs.org/)).
 
 **Deno (JSR):**
 

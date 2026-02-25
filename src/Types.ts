@@ -39,6 +39,17 @@ export type ErrorOptions = {
 }
 
 /**
+ * Finder pattern shape and gap options.
+ * @description Shape and spacing for finder patterns.
+ */
+export type FinderOptions = {
+  /** Finder module shape */
+  shape?: ModuleShape
+  /** Gap between finder modules */
+  gap?: number
+}
+
+/**
  * Options for data URL, ASCII, table, and canvas output.
  * @description Value, optional error level and cell layout.
  */
@@ -51,17 +62,6 @@ export type FormatOptions = {
   cellSize?: number
   /** Margin in pixels (default cellSize * 4; not used by toCanvas) */
   margin?: number
-}
-
-/**
- * Finder pattern shape and gap options.
- * @description Shape and spacing for finder patterns.
- */
-export type FinderOptions = {
-  /** Finder module shape */
-  shape?: ModuleShape
-  /** Gap between finder modules */
-  gap?: number
 }
 
 /**
@@ -170,6 +170,17 @@ export type PathResult = {
   cellSize: number
   /** Path d string */
   path: string
+}
+
+/**
+ * PNG output options: value, layout, colors.
+ * @description Same as FormatOptions plus optional hex colors.
+ */
+export type PNGOptions = FormatOptions & {
+  /** Foreground hex color e.g. #000 */
+  color?: string
+  /** Background hex color e.g. #fff */
+  background?: string
 }
 
 /** 2D point with x and y. */

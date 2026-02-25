@@ -1,11 +1,11 @@
 import type * as Types from '@core/Types.ts'
-import * as Helpers from '@core/helpers/index.ts'
+import * as Stream from '@core/helpers/Stream.ts'
 
 /**
  * GIF87a encoding (LZW, global palette, base64).
  * @description Builds GIF from pixel callback and returns data URL.
  */
-export class Gif {
+export class GIF {
   /**
    * Create GIF data URL from pixel callback.
    * @description Renders pixels, LZW-encodes, base64.
@@ -20,13 +20,13 @@ export class Gif {
     height: number,
     getPixel: (x: number, y: number) => number
   ): string {
-    const pixelData = Gif.#buildPixelData(width, height, getPixel)
-    const bytes = Gif.#encodeToBytes(width, height, pixelData)
-    const base64Stream = Helpers.EncodeStream.create()
+    const pixelData = GIF.#buildPixelData(width, height, getPixel)
+    const bytes = GIF.#encodeToBytes(width, height, pixelData)
+    const base64Stream = Stream.EncodeStream.create()
     for (let i = 0; i < bytes.length; i += 1) {
       const byteValue = bytes[i]
       if (byteValue === undefined) {
-        throw new Error('Gif.createDataURL: byte index out of range')
+        throw new Error('GIF.createDataURL: byte index out of range')
       }
       base64Stream.writeByte(byteValue)
     }
@@ -40,7 +40,7 @@ export class Gif {
     let bitBuffer = 0
     const write = function (data: number, length: number): void {
       if (data >>> length !== 0) {
-        throw new Error('Gif.createDataURL: value exceeds given bit length')
+        throw new Error('GIF.createDataURL: value exceeds given bit length')
       }
       while (bitLength + length >= 8) {
         outputStream.writeByte(0xff & ((data << bitLength) | bitBuffer))
@@ -77,7 +77,7 @@ export class Gif {
 
   /** Encode pixel data to GIF87a byte array. */
   static #encodeToBytes(width: number, height: number, pixelData: number[]): number[] {
-    const outputStream = Helpers.ByteStream.create()
+    const outputStream = Stream.ByteStream.create()
     outputStream.writeString('GIF87a')
     outputStream.writeShort(width)
     outputStream.writeShort(height)
@@ -97,7 +97,7 @@ export class Gif {
     outputStream.writeShort(height)
     outputStream.writeByte(0)
     const lzwMinCodeSize = 2
-    const rasterData = Gif.#getLZWRaster(pixelData, lzwMinCodeSize)
+    const rasterData = GIF.#getLZWRaster(pixelData, lzwMinCodeSize)
     outputStream.writeByte(lzwMinCodeSize)
     let writeOffset = 0
     while (rasterData.length - writeOffset > 255) {
@@ -117,14 +117,14 @@ export class Gif {
     const clearCode = 1 << lzwMinCodeSize
     const endCode = (1 << lzwMinCodeSize) + 1
     let currentBitLength = lzwMinCodeSize + 1
-    const lzwCodeTable = Gif.#lzwTable()
+    const lzwCodeTable = GIF.#lzwTable()
     for (let i = 0; i < clearCode; i += 1) {
       lzwCodeTable.add(String.fromCharCode(i))
     }
     lzwCodeTable.add(String.fromCharCode(clearCode))
     lzwCodeTable.add(String.fromCharCode(endCode))
-    const byteOutputStream = Helpers.ByteStream.create()
-    const bitStream = Gif.#bitOutputStream(byteOutputStream)
+    const byteOutputStream = Stream.ByteStream.create()
+    const bitStream = GIF.#bitOutputStream(byteOutputStream)
     bitStream.write(clearCode, currentBitLength)
     let dataIndex = 0
     const firstPixel = pixelData[dataIndex]
@@ -139,7 +139,7 @@ export class Gif {
       } else {
         const lzwCode = lzwCodeTable.indexOf(currentString)
         if (lzwCode === undefined) {
-          throw new Error('Gif.createDataURL: missing code for current string')
+          throw new Error('GIF.createDataURL: missing code for current string')
         }
         bitStream.write(lzwCode, currentBitLength)
         if (lzwCodeTable.size() < 0xfff) {
@@ -153,7 +153,7 @@ export class Gif {
     }
     const finalLzwCode = lzwCodeTable.indexOf(currentString)
     if (finalLzwCode === undefined) {
-      throw new Error('Gif.createDataURL: missing code for final string')
+      throw new Error('GIF.createDataURL: missing code for final string')
     }
     bitStream.write(finalLzwCode, currentBitLength)
     bitStream.write(endCode, currentBitLength)
@@ -170,7 +170,7 @@ export class Gif {
     }
     const add = function (key: string): void {
       if (contains(key)) {
-        throw new Error('Gif.createDataURL: duplicate table key')
+        throw new Error('GIF.createDataURL: duplicate table key')
       }
       codeMap[key] = tableSize
       tableSize += 1

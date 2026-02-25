@@ -75,7 +75,7 @@ export class Format {
 
   /**
    * GIF data URL from QR grid.
-   * @description Renders via Gif.createDataURL.
+   * @description Renders via GIF.createDataURL.
    * @param qr - Module grid
    * @param cellSize - Module size (default 2)
    * @param margin - Quiet zone (default derived)
@@ -87,7 +87,7 @@ export class Format {
     const imageSize = qr.getModuleCount() * cellSize + margin * 2
     const contentMin = margin
     const contentMax = imageSize - margin
-    return Helpers.Gif.createDataURL(
+    return Helpers.GIF.createDataURL(
       imageSize,
       imageSize,
       function (pixelX: number, pixelY: number): number {

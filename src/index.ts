@@ -2,7 +2,7 @@ import type * as Types from '@app/Types.ts'
 import * as Adapter from '@adapter/index.ts'
 import * as Matrix from '@app/Matrix.ts'
 import * as Transform from '@app/Transform.ts'
-import * as Format from '@core/helpers/Format.ts'
+import * as Helpers from '@core/helpers/index.ts'
 
 /**
  * Static QR code to SVG API.
@@ -24,7 +24,7 @@ export default class QRCode {
     const { value, error, cellSize, margin } = options
     const level = error?.level ?? 'H'
     const grid = QRCode.#matrixToGrid(Matrix.Matrix.generate(value, level))
-    return Format.Format.ascii(grid, cellSize, margin)
+    return Helpers.Format.ascii(grid, cellSize, margin)
   }
 
   /**
@@ -37,7 +37,7 @@ export default class QRCode {
     const { value, error, cellSize } = options
     const level = error?.level ?? 'H'
     const grid = QRCode.#matrixToGrid(Matrix.Matrix.generate(value, level))
-    Format.Format.canvas(grid, ctx, cellSize)
+    Helpers.Format.canvas(grid, ctx, cellSize)
   }
 
   /**
@@ -52,7 +52,7 @@ export default class QRCode {
     const grid = QRCode.#matrixToGrid(Matrix.Matrix.generate(value, level))
     const cs = cellSize ?? 2
     const m = margin ?? cs * 4
-    return Format.Format.dataURL(grid, cs, m)
+    return Helpers.Format.dataURL(grid, cs, m)
   }
 
   /**
@@ -105,6 +105,27 @@ export default class QRCode {
       (logoOpts?.text !== undefined && logoOpts.text !== '' ? 80 : logoOpts?.image ? 80 : 0)
     const logoBorderRadius = logoOpts?.radius ?? 0
     return Transform.Transform.toPath(matrix, size, shapeOptions, logoSize, logoBorderRadius)
+  }
+
+  /**
+   * Generate PNG data URL from QR options.
+   * @description Encodes value to PNG; optional hex color and background.
+   * @param options - Value, error, cell size, margin, color, background
+   * @returns Promise resolving to PNG data URL
+   */
+  static async toPNG(options: Types.PNGOptions): Promise<string> {
+    const { value, error, cellSize, margin, color, background } = options
+    const level = error?.level ?? 'H'
+    const grid = QRCode.#matrixToGrid(Matrix.Matrix.generate(value, level))
+    const effectiveCellSize = cellSize ?? 2
+    const effectiveMargin = margin ?? effectiveCellSize * 4
+    return await Helpers.PNG.createDataURL(
+      grid,
+      effectiveCellSize,
+      effectiveMargin,
+      color,
+      background
+    )
   }
 
   /**
@@ -170,7 +191,7 @@ export default class QRCode {
     const grid = QRCode.#matrixToGrid(Matrix.Matrix.generate(value, level))
     const cs = cellSize ?? 2
     const m = margin ?? cs * 4
-    return Format.Format.table(grid, cs, m)
+    return Helpers.Format.table(grid, cs, m)
   }
 
   /**

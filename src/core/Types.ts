@@ -98,6 +98,12 @@ export type MatrixBuildResult = {
   encodedDataCache: number[]
 }
 
+/** PNG channel count: 1 grayscale, 3 RGB. */
+export type PngChannelCount = 1 | 3
+
+/** PNG IHDR color type: 0 grayscale, 2 RGB. */
+export type PngColorTypeCode = 0 | 2
+
 /** Decoded PNG image data. */
 export type PngDecode = {
   /** RGBA pixel data */
@@ -107,6 +113,21 @@ export type PngDecode = {
   /** Image height in pixels */
   height: number
 }
+
+/** Raw pixel build result for PNG. */
+export type PngPixelBuildResult = {
+  /** Image width in pixels */
+  width: number
+  /** Image height in pixels */
+  height: number
+  /** Raw pixel bytes (grayscale or RGB) */
+  data: Uint8Array
+  /** Channel count: 1 or 3 */
+  channels: PngChannelCount
+}
+
+/** RGB triple (0–255) for PNG foreground/background. */
+export type PngRgbTuple = [number, number, number]
 
 /**
  * QR bit buffer for encoding.
@@ -184,11 +205,11 @@ export type QRDataSegment = {
 /** Allowed QR data encoding modes. */
 export type QREncodeMode = 'Numeric' | 'Alphanumeric' | 'Byte' | 'Kanji'
 
-/** Error correction levels L/M/Q/H. */
-export type QRErrorLevel = 'L' | 'M' | 'Q' | 'H'
-
 /** Error level name to index (L/M/Q/H → 0..3 for RS block table). */
 export type QRErrorIndexMap = Record<QRErrorLevel, number>
+
+/** Error correction levels L/M/Q/H. */
+export type QRErrorLevel = 'L' | 'M' | 'Q' | 'H'
 
 /**
  * QR module grid read API.
