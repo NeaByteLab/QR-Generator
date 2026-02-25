@@ -1,7 +1,7 @@
 {
   "name": "@neabyte/qr-generator",
   "description": "QR code SVG generator with custom shapes, gradients, logo",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "type": "module",
   "license": "MIT",
   "exports": "./src/index.ts",
