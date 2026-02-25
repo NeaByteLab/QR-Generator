@@ -82,8 +82,11 @@
       "build.config.ts",
       "coverage/",
       "dist/",
+      "docs/",
+      "examples/",
       "package-lock.json",
       "package.json",
+      "preview/",
       "tests/"
     ]
   }
