@@ -1,0 +1,418 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="QR code generator: SVG, path, GIF, ASCII, canvas. Custom shapes (rounded, circle, diamond, square, shuriken, star, triangle), finder styling, solid or linear/radial gradients, text/image logo. Live demo for @neabyte/qr-generator."
+    />
+    <meta
+      name="keywords"
+      content="qr code, qrcode, svg, generator, logo, gradient, custom shapes, finder pattern, @neabyte/qr-generator, demo"
+    />
+    <meta property="og:title" content="QR Generator – Demo" />
+    <meta
+      property="og:description"
+      content="QR code generator: SVG, path, GIF, ASCII, canvas. Custom shapes, finder styling, gradients, text/image logo. Live demo for @neabyte/qr-generator."
+    />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="QR Generator – Demo" />
+    <meta
+      name="twitter:description"
+      content="QR code generator: SVG, path, GIF, ASCII, canvas. Custom shapes, gradients, logo. Live demo for @neabyte/qr-generator."
+    />
+    <title>QR Generator – Demo</title>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        font-family: system-ui, sans-serif;
+        margin: 0;
+        padding: 1.5rem;
+        background: #fafafa;
+        color: #1a1a1a;
+        min-height: 100vh;
+      }
+      .wrap {
+        max-width: 720px;
+        margin: 0 auto;
+      }
+      .header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.75rem;
+        margin-bottom: 1rem;
+      }
+      h1 {
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin: 0;
+      }
+      .header a {
+        font-size: 0.8125rem;
+        color: #2563eb;
+        text-decoration: none;
+      }
+      .header a:hover {
+        text-decoration: underline;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.5rem;
+        align-items: start;
+      }
+      @media (max-width: 560px) {
+        .grid {
+          grid-template-columns: 1fr;
+        }
+      }
+      .panel {
+        background: #fff;
+        border: 1px solid #e5e5e5;
+        border-radius: 6px;
+        padding: 1rem;
+      }
+      .panel h2 {
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: #666;
+        margin: 0 0 0.75rem 0;
+      }
+      label {
+        display: block;
+        font-size: 0.8125rem;
+        font-weight: 500;
+        margin-top: 0.75rem;
+        color: #333;
+      }
+      label:first-of-type {
+        margin-top: 0;
+      }
+      input[type='text'],
+      input[type='number'],
+      select {
+        width: 100%;
+        margin-top: 0.25rem;
+        padding: 0.5rem 0.5rem;
+        font-size: 0.875rem;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        background: #fff;
+      }
+      input[type='color'] {
+        width: 100%;
+        margin-top: 0.25rem;
+        height: 2.25rem;
+        padding: 2px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        cursor: pointer;
+        background: #fff;
+      }
+      input:focus,
+      select:focus {
+        outline: none;
+        border-color: #888;
+      }
+      .row {
+        display: flex;
+        gap: 0.5rem;
+        margin-top: 0.75rem;
+      }
+      .row button {
+        flex: 1;
+        padding: 0.5rem 0.75rem;
+        font-size: 0.8125rem;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        background: #fff;
+        cursor: pointer;
+        color: #333;
+      }
+      .row button:hover {
+        background: #f5f5f5;
+        border-color: #ccc;
+      }
+      #out {
+        min-height: 200px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 1rem;
+        background: #fff;
+        border-radius: 6px;
+        border: 1px solid #e5e5e5;
+      }
+      #out svg {
+        max-width: 100%;
+        height: auto;
+        display: block;
+      }
+      .err {
+        font-size: 0.8125rem;
+        color: #b00;
+      }
+      .configWrap {
+        margin-top: 1rem;
+      }
+      .configWrap h2 {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.5rem;
+      }
+      .configWrap pre {
+        margin: 0.5rem 0 0 0;
+        padding: 0.75rem 1rem;
+        font-size: 0.75rem;
+        font-family: ui-monospace, monospace;
+        background: #f5f5f5;
+        border: 1px solid #e5e5e5;
+        border-radius: 4px;
+        overflow-x: auto;
+        white-space: pre;
+        color: #333;
+      }
+      .configWrap button {
+        font-size: 0.6875rem;
+        padding: 0.25rem 0.5rem;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        background: #fff;
+        cursor: pointer;
+        color: #666;
+      }
+      .configWrap button:hover {
+        background: #f0f0f0;
+        color: #333;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <header class="header">
+        <h1>QR Generator</h1>
+        <a
+          href="https://github.com/NeaByteLab/QR-Generator"
+          target="_blank"
+          rel="noopener noreferrer"
+          >[ GitHub ]</a
+        >
+      </header>
+      <div class="grid">
+        <div class="panel">
+          <h2>Content</h2>
+          <label for="value">Value</label>
+          <input type="text" id="value" value="https://example.com" placeholder="Text or URL" />
+          <label for="size">Size (px)</label>
+          <input type="number" id="size" value="280" min="80" max="600" step="20" />
+          <h2 style="margin-top: 1rem">Style</h2>
+          <label for="moduleShape">Module shape</label>
+          <select id="moduleShape">
+            <option value="rounded">Rounded</option>
+            <option value="square">Square</option>
+            <option value="circle">Circle</option>
+            <option value="diamond">Diamond</option>
+            <option value="shuriken">Shuriken</option>
+            <option value="star">Star</option>
+            <option value="triangle">Triangle</option>
+          </select>
+          <label for="moduleGap">Module gap</label>
+          <input type="number" id="moduleGap" value="0" min="0" max="4" step="1" />
+          <label for="finderShape">Finder shape</label>
+          <select id="finderShape">
+            <option value="rounded">Rounded</option>
+            <option value="square">Square</option>
+            <option value="circle">Circle</option>
+            <option value="diamond">Diamond</option>
+            <option value="shuriken">Shuriken</option>
+            <option value="star">Star</option>
+            <option value="triangle">Triangle</option>
+          </select>
+          <label for="finderGap">Finder gap</label>
+          <input type="number" id="finderGap" value="0" min="0" max="4" step="1" />
+          <label for="color">Color</label>
+          <input type="color" id="color" value="#2563eb" />
+          <label for="background">Background</label>
+          <input type="color" id="background" value="#ffffff" />
+          <h2 style="margin-top: 1rem">Logo</h2>
+          <label for="logoText">Text (center)</label>
+          <input type="text" id="logoText" value="NB" placeholder="e.g. QR" />
+          <label for="logoSize">Logo size</label>
+          <input type="number" id="logoSize" value="80" min="40" max="160" step="8" />
+          <label for="logoRadius">Logo radius</label>
+          <input type="number" id="logoRadius" value="0" min="0" max="24" step="2" />
+          <div class="row">
+            <button type="button" id="dl">Download SVG</button>
+            <button type="button" id="toFile">Save (toFile)</button>
+          </div>
+        </div>
+        <div class="panel">
+          <h2>Preview</h2>
+          <div id="out"></div>
+          <div class="configWrap">
+            <h2>Live config <button type="button" id="copyConfig">Copy</button></h2>
+            <pre id="configCode"></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script type="module">
+      const valueEl = document.getElementById('value')
+      const sizeEl = document.getElementById('size')
+      const moduleShapeEl = document.getElementById('moduleShape')
+      const moduleGapEl = document.getElementById('moduleGap')
+      const finderShapeEl = document.getElementById('finderShape')
+      const finderGapEl = document.getElementById('finderGap')
+      const colorEl = document.getElementById('color')
+      const backgroundEl = document.getElementById('background')
+      const logoTextEl = document.getElementById('logoText')
+      const logoSizeEl = document.getElementById('logoSize')
+      const logoRadiusEl = document.getElementById('logoRadius')
+      const outEl = document.getElementById('out')
+      const configCodeEl = document.getElementById('configCode')
+      const copyConfigBtn = document.getElementById('copyConfig')
+      const dlBtn = document.getElementById('dl')
+      const toFileBtn = document.getElementById('toFile')
+
+      let lastSvgString = ''
+      let qrCodeModule = null
+      let rafId = null
+
+      async function loadQrGenerator() {
+        if (!qrCodeModule) {
+          const importedModule = await import('https://esm.sh/@neabyte/qr-generator')
+          qrCodeModule = importedModule.default
+        }
+        return qrCodeModule
+      }
+
+      function getOptions() {
+        const value = valueEl.value.trim()
+        const size = Number(sizeEl.value) || 280
+        const logoText = logoTextEl.value.trim()
+        const qrOptions = {
+          value: value || ' ',
+          size,
+          color: colorEl.value.trim() || '#2563eb',
+          background: backgroundEl.value.trim() || '#ffffff',
+          module: {
+            shape: moduleShapeEl.value,
+            gap: Number(moduleGapEl.value) || 0
+          },
+          finder: {
+            shape: finderShapeEl.value,
+            gap: Number(finderGapEl.value) || 0
+          }
+        }
+        if (logoText) {
+          qrOptions.logo = {
+            text: logoText,
+            size: Number(logoSizeEl.value) || 80,
+            radius: Number(logoRadiusEl.value) || 0
+          }
+        }
+        return qrOptions
+      }
+
+      function formatConfig(options) {
+        return JSON.stringify(options, null, 2)
+      }
+
+      function updateConfigDisplay() {
+        configCodeEl.textContent = formatConfig(getOptions())
+      }
+
+      function renderPreview() {
+        const qrOptions = getOptions()
+        loadQrGenerator()
+          .then(qrCode => {
+            try {
+              lastSvgString = qrCode.toSVG(qrOptions)
+              outEl.innerHTML = lastSvgString
+              updateConfigDisplay()
+            } catch (error) {
+              outEl.innerHTML = '<p class="err">' + String(error) + '</p>'
+              updateConfigDisplay()
+            }
+          })
+          .catch(error => {
+            outEl.innerHTML = '<p class="err">' + String(error) + '</p>'
+            updateConfigDisplay()
+          })
+      }
+
+      function scheduleRender() {
+        if (rafId) return
+        rafId = requestAnimationFrame(() => {
+          rafId = null
+          renderPreview()
+        })
+      }
+
+      function downloadSvg() {
+        if (!lastSvgString) return
+        const blob = new Blob([lastSvgString], { type: 'image/svg+xml' })
+        const downloadLink = document.createElement('a')
+        downloadLink.href = URL.createObjectURL(blob)
+        downloadLink.download = 'qrcode.svg'
+        downloadLink.click()
+        URL.revokeObjectURL(downloadLink.href)
+      }
+
+      async function saveSvgToFile() {
+        if (!lastSvgString) return
+        try {
+          const qrCode = await loadQrGenerator()
+          await qrCode.toFile('qrcode.svg', getOptions())
+        } catch (error) {
+          console.error(error)
+        }
+      }
+
+      valueEl.addEventListener('input', () => {
+        setTimeout(scheduleRender, 120)
+      })
+      valueEl.addEventListener('change', scheduleRender)
+      sizeEl.addEventListener('input', scheduleRender)
+      sizeEl.addEventListener('change', scheduleRender)
+      moduleShapeEl.addEventListener('change', scheduleRender)
+      moduleGapEl.addEventListener('input', scheduleRender)
+      moduleGapEl.addEventListener('change', scheduleRender)
+      finderShapeEl.addEventListener('change', scheduleRender)
+      finderGapEl.addEventListener('input', scheduleRender)
+      finderGapEl.addEventListener('change', scheduleRender)
+      colorEl.addEventListener('input', scheduleRender)
+      colorEl.addEventListener('change', scheduleRender)
+      backgroundEl.addEventListener('input', scheduleRender)
+      backgroundEl.addEventListener('change', scheduleRender)
+      logoTextEl.addEventListener('input', () => {
+        setTimeout(scheduleRender, 120)
+      })
+      logoTextEl.addEventListener('change', scheduleRender)
+      logoSizeEl.addEventListener('input', scheduleRender)
+      logoSizeEl.addEventListener('change', scheduleRender)
+      logoRadiusEl.addEventListener('input', scheduleRender)
+      logoRadiusEl.addEventListener('change', scheduleRender)
+      dlBtn.addEventListener('click', downloadSvg)
+      toFileBtn.addEventListener('click', saveSvgToFile)
+      copyConfigBtn.addEventListener('click', () => {
+        navigator.clipboard.writeText(configCodeEl.textContent).then(() => {
+          copyConfigBtn.textContent = 'Copied!'
+          setTimeout(() => {
+            copyConfigBtn.textContent = 'Copy'
+          }, 1500)
+        })
+      })
+
+      loadQrGenerator().then(() => renderPreview())
+    </script>
+  </body>
+</html>

@@ -15,7 +15,7 @@ Generate QR as SVG, path, GIF, ASCII, or canvas. Seven shapes (rounded, circle, 
 
 ## Features
 
-- **Multiple output formats** — SVG string (`toSVG`), raw path data (`toPath`), GIF data URL (`toDataURL`), ASCII art (`toASCII`), table/img HTML (`toTableTag`, `toImgTag`), and canvas rendering (`renderToCanvas`).
+- **Multiple output formats** — SVG string (`toSVG`), raw path data (`toPath`), GIF data URL (`toDataURL`), ASCII art (`toASCII`), table/img HTML (`toTableTag`, `toImgTag`), and canvas rendering (`toCanvas`).
 - **Finder pattern styling** — Separate shape and gap for the three corner finder patterns.
 - **Custom module shapes** — Rounded, circle, diamond, square, shuriken, star, triangle; configurable gap.
 - **Color options** — Solid color or linear/radial gradients with full control over stops and geometry.
@@ -51,7 +51,8 @@ const svg = QRCode.toSVG({
 // Use in HTML, save to file, or return from API
 ```
 
-**Next:** [USAGE.md](USAGE.md) for all options (shapes, gradients, logo, `toPath`, etc.). [examples/README.md](examples/README.md) for runnable scripts.
+- [USAGE.md](USAGE.md) for all options (shapes, gradients, logo, `toPath`, etc.).
+- [examples/README.md](examples/README.md) for runnable scripts.
 
 ## Build & Test
 

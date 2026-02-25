@@ -1,5 +1,5 @@
-import type * as Types from '@app/core/Types.ts'
-import * as Helpers from '@app/core/helpers/index.ts'
+import type * as Types from '@core/Types.ts'
+import * as Helpers from '@core/helpers/index.ts'
 
 /**
  * QR code factory and instance holder.

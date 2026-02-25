@@ -1,5 +1,5 @@
 import { assert, assertEquals, assertThrows } from '@std/assert'
-import * as Helpers from '@app/core/helpers/index.ts'
+import * as Helpers from '@core/helpers/index.ts'
 
 const stringToBytes = Helpers.Byte.stringToBytes
 const bitOff = false

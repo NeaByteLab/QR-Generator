@@ -49,7 +49,7 @@ export type FormatOptions = {
   error?: ErrorOptions
   /** Cell size in pixels (default 2) */
   cellSize?: number
-  /** Margin in pixels (default cellSize * 4; not used by renderToCanvas) */
+  /** Margin in pixels (default cellSize * 4; not used by toCanvas) */
   margin?: number
 }
 
@@ -270,3 +270,14 @@ export type ShapePathStrategy = (
 
 /** SVG options: QR options plus color and background. */
 export type SVGOptions = QRCodeOptions & { color?: ColorOption; background?: string }
+
+/**
+ * Stream-like interface for toFileStream.
+ * @description write(data) and optional end(); Node or Web adapter.
+ */
+export type WritableStreamLike = {
+  /** Writes data; may return void or Promise. */
+  write(data: string | Uint8Array): void | Promise<void>
+  /** Optional close/finish. */
+  end?(): void | Promise<void>
+}

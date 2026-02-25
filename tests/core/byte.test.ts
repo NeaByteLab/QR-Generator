@@ -1,5 +1,5 @@
 import { assert, assertEquals, assertThrows } from '@std/assert'
-import * as Helpers from '@app/core/helpers/index.ts'
+import * as Helpers from '@core/helpers/index.ts'
 
 Deno.test('Byte.createStringToBytes - entry count mismatch throws', () => {
   assertThrows(() => Helpers.Byte.createStringToBytes('', 1), Error, 'entry count mismatch')

@@ -1,9 +1,9 @@
 import type * as Types from '@app/Types.ts'
-import QRCode from '@app/core/index.ts'
+import QRCode from '@core/index.ts'
 
 /**
  * QR code module matrix generator.
- * @description Binary matrix from value using local encoder (no third-party qrcode).
+ * @description Binary matrix from value using local encoder.
  */
 export class Matrix {
   /**

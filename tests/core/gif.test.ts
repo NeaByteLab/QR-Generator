@@ -1,5 +1,5 @@
 import { assert } from '@std/assert'
-import * as Helpers from '@app/core/helpers/index.ts'
+import * as Helpers from '@core/helpers/index.ts'
 
 Deno.test('Gif.createDataURL - base64 decodable', () => {
   const url = Helpers.Gif.createDataURL(4, 4, (x, y) => (x + y) % 2)

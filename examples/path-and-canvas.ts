@@ -1,6 +1,6 @@
 /**
- * toPath (path-only) and renderToCanvas (browser).
- * @description toPath writes path-only.html; renderToCanvas demo in canvas-qr.html (open in browser).
+ * toPath (path-only) and toCanvas (browser).
+ * @description toPath writes path-only.html; toCanvas demo in canvas-qr.html (open in browser).
  * Run from repo root: deno run -A examples/path-and-canvas.ts
  */
 import QRCode from '@neabyte/qr-generator'
@@ -29,15 +29,15 @@ const pathOnlyHtml = `<!DOCTYPE html><html><body>
 await Deno.writeTextFile(`${outDir}/path-only.html`, pathOnlyHtml)
 console.log(`Saved: ${outDir}/path-only.html`)
 
-/** Step 4: Build HTML that loads the lib in browser and calls renderToCanvas on a canvas. */
-const canvasHtml = `<!DOCTYPE html><html><head><meta charset="utf-8"><title>renderToCanvas</title></head><body>
-<p>QR from renderToCanvas() — open this file in a browser</p>
+/** Step 4: Build HTML that loads the lib in browser and calls toCanvas on a canvas. */
+const canvasHtml = `<!DOCTYPE html><html><head><meta charset="utf-8"><title>toCanvas</title></head><body>
+<p>QR from toCanvas() — open this file in a browser</p>
 <canvas id="qr" width="200" height="200"></canvas>
 <script type="module">
 import QRCode from 'https://esm.sh/@neabyte/qr-generator'
 const canvas = document.getElementById('qr')
 const ctx = canvas.getContext('2d')
-QRCode.renderToCanvas(ctx, { value: 'Path & Canvas demo', cellSize: 4 })
+QRCode.toCanvas(ctx, { value: 'Path & Canvas demo', cellSize: 4 })
 </script>
 </body></html>`
 await Deno.writeTextFile(`${outDir}/canvas-qr.html`, canvasHtml)

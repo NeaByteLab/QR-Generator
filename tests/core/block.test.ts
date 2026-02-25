@@ -1,5 +1,5 @@
 import { assert, assertEquals, assertThrows } from '@std/assert'
-import * as Helpers from '@app/core/helpers/index.ts'
+import * as Helpers from '@core/helpers/index.ts'
 
 Deno.test('Block.getRSBlocks - invalid error level throws', () => {
   assertThrows(() => Helpers.Block.getRSBlocks(1, 99), Error, 'Invalid RS block config')

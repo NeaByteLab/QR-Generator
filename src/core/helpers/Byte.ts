@@ -1,4 +1,4 @@
-import * as Helpers from '@app/core/helpers/index.ts'
+import * as Helpers from '@core/helpers/index.ts'
 
 /**
  * String-to-bytes encoders (UTF-8, custom map).

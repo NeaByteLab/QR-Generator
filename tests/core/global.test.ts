@@ -1,5 +1,5 @@
 import { assert, assertEquals } from '@std/assert'
-import * as Helpers from '@app/core/helpers/index.ts'
+import * as Helpers from '@core/helpers/index.ts'
 
 Deno.test('Global.QRError - L M Q H levels', () => {
   assertEquals(Helpers.Global.QRError['L'], 1)

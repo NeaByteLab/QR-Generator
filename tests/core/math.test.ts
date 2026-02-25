@@ -1,5 +1,5 @@
 import { assert, assertEquals, assertThrows } from '@std/assert'
-import * as Helpers from '@app/core/helpers/index.ts'
+import * as Helpers from '@core/helpers/index.ts'
 
 Deno.test('Math.galoisExp - exponent 0 returns 1', () => {
   assertEquals(Helpers.Math.galoisExp(0), 1)

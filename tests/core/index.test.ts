@@ -1,5 +1,5 @@
 import { assert, assertEquals, assertThrows } from '@std/assert'
-import QRCode from '@app/core/index.ts'
+import QRCode from '@core/index.ts'
 
 Deno.test('QRCode - addData default mode Byte', () => {
   const qr = QRCode.create(1, 'L')

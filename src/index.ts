@@ -1,7 +1,8 @@
 import type * as Types from '@app/Types.ts'
+import * as Adapter from '@adapter/index.ts'
 import * as Matrix from '@app/Matrix.ts'
 import * as Transform from '@app/Transform.ts'
-import * as Format from '@app/core/helpers/Format.ts'
+import * as Format from '@core/helpers/Format.ts'
 
 /**
  * Static QR code to SVG API.
@@ -12,19 +13,6 @@ export default class QRCode {
   static readonly defaultColor = '#000000'
   /** Default background when background option omitted. */
   static readonly defaultBackground = '#ffffff'
-
-  /**
-   * Render QR into 2D canvas context.
-   * @description Encodes value and draws modules on given context.
-   * @param ctx - Canvas 2D context to draw into
-   * @param options - Value, optional error level, cell size
-   */
-  static renderToCanvas(ctx: CanvasRenderingContext2D, options: Types.FormatOptions): void {
-    const { value, error, cellSize } = options
-    const level = error?.level ?? 'H'
-    const grid = QRCode.#matrixToGrid(Matrix.Matrix.generate(value, level))
-    Format.Format.canvas(grid, ctx, cellSize)
-  }
 
   /**
    * Generate ASCII art string.
@@ -40,6 +28,19 @@ export default class QRCode {
   }
 
   /**
+   * Draw QR into 2D canvas context.
+   * @description Encodes value and draws modules on given context.
+   * @param ctx - Canvas 2D context to draw into
+   * @param options - Value, optional error level, cell size
+   */
+  static toCanvas(ctx: CanvasRenderingContext2D, options: Types.FormatOptions): void {
+    const { value, error, cellSize } = options
+    const level = error?.level ?? 'H'
+    const grid = QRCode.#matrixToGrid(Matrix.Matrix.generate(value, level))
+    Format.Format.canvas(grid, ctx, cellSize)
+  }
+
+  /**
    * Generate data URL (GIF) for image use.
    * @description Encodes value and returns data URL for img src or download.
    * @param options - Value, optional error level, cell size, margin
@@ -52,6 +53,41 @@ export default class QRCode {
     const cs = cellSize ?? 2
     const m = margin ?? cs * 4
     return Format.Format.dataURL(grid, cs, m)
+  }
+
+  /**
+   * Write SVG to file via platform storage.
+   * @description Uses getDefaultStorage; Deno/Node write to path, browser triggers download.
+   * @param path - File path or download filename
+   * @param options - SVG options (value, size, color, logo)
+   */
+  static async toFile(path: string, options: Types.SVGOptions): Promise<void> {
+    const svg = QRCode.toSVG(options)
+    const storage = await Adapter.getDefaultStorage()
+    await storage.writeFile(path, svg)
+  }
+
+  /**
+   * Write SVG to a writable stream (Node/server).
+   * @description Calls stream.write(svg) then stream.end() if present.
+   * @param stream - Writable stream (Node Writable or adapter with write/end)
+   * @param options - SVG options (value, size, color, logo)
+   */
+  static async toFileStream(
+    stream: Types.WritableStreamLike,
+    options: Types.SVGOptions
+  ): Promise<void> {
+    const svg = QRCode.toSVG(options)
+    const writeResult = stream.write(svg)
+    if (writeResult !== undefined && typeof (writeResult as Promise<void>).then === 'function') {
+      await (writeResult as Promise<void>)
+    }
+    if (typeof stream.end === 'function') {
+      const endResult = stream.end()
+      if (endResult !== undefined && typeof (endResult as Promise<void>).then === 'function') {
+        await (endResult as Promise<void>)
+      }
+    }
   }
 
   /**

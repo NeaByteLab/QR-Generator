@@ -1,7 +1,7 @@
 import { assert } from '@std/assert'
-import type * as Types from '@app/core/Types.ts'
-import * as Helpers from '@app/core/helpers/index.ts'
-import QRCode from '@app/core/index.ts'
+import type * as Types from '@core/Types.ts'
+import * as Helpers from '@core/helpers/index.ts'
+import QRCode from '@core/index.ts'
 
 function makeGrid(size: number, isDark: (r: number, c: number) => boolean): Types.QRModuleGrid {
   return {

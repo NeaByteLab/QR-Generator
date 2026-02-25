@@ -1,4 +1,4 @@
-import type * as Types from '@app/core/Types.ts'
+import type * as Types from '@core/Types.ts'
 
 /**
  * Mutable byte array output stream.

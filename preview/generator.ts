@@ -6,7 +6,7 @@
 
 import gifenc from 'npm:gifenc'
 import QRCode, { type SVGOptions } from '@neabyte/qr-generator'
-import * as Helpers from '@app/core/helpers/index.ts'
+import * as Helpers from '@core/helpers/index.ts'
 
 /**
  * Preview generator for SVGs and GIFs.

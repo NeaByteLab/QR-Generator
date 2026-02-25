@@ -331,7 +331,7 @@ Deno.test('QRCode - radial gradient custom cx cy r appear in output', () => {
   assert(svg.includes('r="0.5"'))
 })
 
-Deno.test('QRCode - renderToCanvas accepts error level option', () => {
+Deno.test('QRCode - toCanvas accepts error level option', () => {
   const fillRectCalls: { x: number; y: number; w: number; h: number }[] = []
   const ctx = {
     fillStyle: '',
@@ -339,11 +339,11 @@ Deno.test('QRCode - renderToCanvas accepts error level option', () => {
       fillRectCalls.push({ x: _x, y: _y, w: _w, h: _h })
     }
   } as unknown as CanvasRenderingContext2D
-  QRCode.renderToCanvas(ctx, { value: 'x', cellSize: 2, error: { level: 'L' } })
+  QRCode.toCanvas(ctx, { value: 'x', cellSize: 2, error: { level: 'L' } })
   assert(fillRectCalls.length >= 21 * 21)
 })
 
-Deno.test('QRCode - renderToCanvas draws modules to context', () => {
+Deno.test('QRCode - toCanvas draws modules to context', () => {
   const fillRectCalls: { x: number; y: number; w: number; h: number }[] = []
   const ctx = {
     fillStyle: '',
@@ -351,12 +351,12 @@ Deno.test('QRCode - renderToCanvas draws modules to context', () => {
       fillRectCalls.push({ x, y, w, h })
     }
   } as unknown as CanvasRenderingContext2D
-  QRCode.renderToCanvas(ctx, { value: 'x', cellSize: 2 })
+  QRCode.toCanvas(ctx, { value: 'x', cellSize: 2 })
   assert(fillRectCalls.length >= 21 * 21)
   assert(fillRectCalls.some((c) => c.w === 2 && c.h === 2))
 })
 
-Deno.test('QRCode - renderToCanvas with omitted cellSize uses default', () => {
+Deno.test('QRCode - toCanvas with omitted cellSize uses default', () => {
   const fillRectCalls: { w: number; h: number }[] = []
   const ctx = {
     fillStyle: '',
@@ -364,7 +364,7 @@ Deno.test('QRCode - renderToCanvas with omitted cellSize uses default', () => {
       fillRectCalls.push({ w, h })
     }
   } as unknown as CanvasRenderingContext2D
-  QRCode.renderToCanvas(ctx, { value: 'x' })
+  QRCode.toCanvas(ctx, { value: 'x' })
   assert(fillRectCalls.length >= 21 * 21)
   assert(fillRectCalls.some((c) => c.w === 2 && c.h === 2))
 })

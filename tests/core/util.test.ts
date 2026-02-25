@@ -1,6 +1,6 @@
 import { assert, assertEquals, assertThrows } from '@std/assert'
-import type * as Types from '@app/core/Types.ts'
-import * as Helpers from '@app/core/helpers/index.ts'
+import type * as Types from '@core/Types.ts'
+import * as Helpers from '@core/helpers/index.ts'
 
 Deno.test('Util.getBCHTypeInfo - different input different output', () => {
   const a = Helpers.Util.getBCHTypeInfo(1)
