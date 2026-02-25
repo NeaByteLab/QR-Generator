@@ -19,7 +19,14 @@ Generate QR codes as SVG, path, GIF, PNG, ASCII, or canvas with custom shapes, g
 
 ## Features
 
-- **Multiple output formats** — SVG string (`toSVG`), raw path data (`toPath`), GIF data URL (`toDataURL`), PNG data URL (`toPNG`), ASCII art (`toASCII`), table/img HTML (`toTableTag`, `toImgTag`), and canvas rendering (`toCanvas`).
+- **Multiple output formats**
+  - ASCII art (`toASCII`)
+  - Canvas rendering (`toCanvas`)
+  - GIF data URL (`toDataURL`)
+  - PNG data URL (`toPNG`)
+  - Raw path data (`toPath`)
+  - SVG string (`toSVG`)
+  - Table/img HTML (`toTableTag`, `toImgTag`)
 - **Finder pattern styling** — Separate shape and gap for the three corner finder patterns.
 - **Custom module shapes** — Rounded, circle, diamond, square, shuriken, star, triangle; configurable gap.
 - **Color options** — Solid color or linear/radial gradients with full control over stops and geometry.
