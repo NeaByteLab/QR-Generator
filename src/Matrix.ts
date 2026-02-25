@@ -1,9 +1,9 @@
 import type * as Types from '@app/Types.ts'
-import * as QrCode from 'qrcode'
+import QRCode from '@app/core/index.ts'
 
 /**
  * QR code module matrix generator.
- * @description Binary matrix from value using qrcode lib.
+ * @description Binary matrix from value using local encoder (no third-party qrcode).
  */
 export class Matrix {
   /**
@@ -14,21 +14,18 @@ export class Matrix {
    * @returns QR module matrix
    */
   static generate(value: string, level: Types.ErrorLevel): Types.QRMatrix {
-    const rawData = Array.prototype.slice.call(
-      (QrCode.default ?? QrCode).create(value, { errorCorrectionLevel: level }).modules.data,
-      0
-    )
-    const sideLength = Math.sqrt(rawData.length)
-    return rawData.reduce((matrixRows: Types.QRMatrix, cellValue: number, cellIndex: number) => {
-      if (cellIndex % sideLength === 0) {
-        matrixRows.push([cellValue as 1 | 0])
-      } else {
-        const lastRow = matrixRows[matrixRows.length - 1]
-        if (lastRow) {
-          lastRow.push(cellValue as 1 | 0)
-        }
+    const qr = QRCode.create(0, level)
+    qr.addData(value, 'Byte')
+    qr.make()
+    const n = qr.getModuleCount()
+    const matrix: Types.QRMatrix = []
+    for (let r = 0; r < n; r++) {
+      const row: (1 | 0)[] = []
+      for (let c = 0; c < n; c++) {
+        row.push(qr.isDark(r, c) ? 1 : 0)
       }
-      return matrixRows
-    }, []) as Types.QRMatrix
+      matrix.push(row)
+    }
+    return matrix
   }
 }

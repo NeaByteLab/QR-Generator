@@ -18,7 +18,7 @@ export class Transform {
    * @param matrix - QR module matrix
    * @param size - Output size in pixels
    * @param options - Shape options for module and finder
-   * @param logoSize - Logo size in modules (0 = no logo)
+   * @param logoSize - Logo size in pixels (0 = no logo)
    * @param logoBorderRadius - Logo area corner radius
    * @returns Path result with cell size and path string
    */
@@ -136,7 +136,8 @@ export class Transform {
         return inCornerCircle(logoX + logoCornerRadius, logoY + logoCornerRadius)
       }
       if (
-        cellCenterX > logoX + areaSize - logoCornerRadius && cellCenterY < logoY + logoCornerRadius
+        cellCenterX > logoX + areaSize - logoCornerRadius &&
+        cellCenterY < logoY + logoCornerRadius
       ) {
         return inCornerCircle(logoX + areaSize - logoCornerRadius, logoY + logoCornerRadius)
       }
@@ -150,7 +151,8 @@ export class Transform {
         )
       }
       if (
-        cellCenterX < logoX + logoCornerRadius && cellCenterY > logoY + areaSize - logoCornerRadius
+        cellCenterX < logoX + logoCornerRadius &&
+        cellCenterY > logoY + areaSize - logoCornerRadius
       ) {
         return inCornerCircle(logoX + logoCornerRadius, logoY + areaSize - logoCornerRadius)
       }
@@ -185,7 +187,7 @@ export class Transform {
   /**
    * Compute logo area bounds and radius.
    * @description Pixel bounds and radius for logo cutout.
-   * @param logoSize - Logo size in modules
+   * @param logoSize - Logo size in pixels
    * @param matrixLength - Matrix side length
    * @param cellSize - Pixel size per module
    * @param logoBorderRadius - Requested logo corner radius
@@ -225,7 +227,10 @@ export class Transform {
    * @returns True when cell in detection pattern
    */
   static #isDetectionPattern(rowIndex: number, colIndex: number, matrixLength: number): boolean {
-    return (rowIndex < 7 && colIndex < 7) || (rowIndex < 7 && colIndex >= matrixLength - 7) ||
+    return (
+      (rowIndex < 7 && colIndex < 7) ||
+      (rowIndex < 7 && colIndex >= matrixLength - 7) ||
       (rowIndex >= matrixLength - 7 && colIndex < 7)
+    )
   }
 }

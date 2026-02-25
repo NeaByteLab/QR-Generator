@@ -14,3 +14,7 @@ Thumbs.db
 # Node
 dist/
 node_modules/
+package-lock.json
+
+# Examples output
+examples/out/

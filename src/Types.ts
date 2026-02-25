@@ -39,6 +39,21 @@ export type ErrorOptions = {
 }
 
 /**
+ * Options for data URL, ASCII, table, and canvas output.
+ * @description Value, optional error level and cell layout.
+ */
+export type FormatOptions = {
+  /** Content to encode in QR */
+  value: string
+  /** Error correction options */
+  error?: ErrorOptions
+  /** Cell size in pixels (default 2) */
+  cellSize?: number
+  /** Margin in pixels (default cellSize * 4; not used by renderToCanvas) */
+  margin?: number
+}
+
+/**
  * Finder pattern shape and gap options.
  * @description Shape and spacing for finder patterns.
  */
@@ -239,6 +254,19 @@ export type ShapeOptions = {
     gap?: number
   }
 }
+
+/**
+ * Shape path strategy signature for one module.
+ * @description Function from corners, neighbors, gaps, eye to path d string.
+ */
+export type ShapePathStrategy = (
+  corners: Corners,
+  neighbors: Neighbors,
+  cellSize: number,
+  moduleGap: number,
+  finderGap: number,
+  eyePattern: boolean
+) => string
 
 /** SVG options: QR options plus color and background. */
 export type SVGOptions = QRCodeOptions & { color?: ColorOption; background?: string }

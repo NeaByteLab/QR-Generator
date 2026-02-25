@@ -23,6 +23,15 @@ Deno.test('QRCode - all module shapes produce valid path', () => {
   }
 })
 
+Deno.test('QRCode - empty value produces valid path and SVG', () => {
+  const pathResult = QRCode.toPath({ value: '', size: 100 })
+  assert(pathResult.path.startsWith('M'))
+  assert(pathResult.cellSize > 0)
+  const svg = QRCode.toSVG({ value: '', size: 100 })
+  assert(svg.includes('xmlns="http://www.w3.org/2000/svg"'))
+  assert(svg.includes('viewBox="0 0 100 100"'))
+})
+
 Deno.test('QRCode - applies background color', () => {
   const background = '#ff0000'
   const svg = QRCode.toSVG({ value: 'test', size: 200, background })
@@ -33,6 +42,11 @@ Deno.test('QRCode - applies solid module color', () => {
   const color = '#00ff00'
   const svg = QRCode.toSVG({ value: 'test', size: 200, color })
   assert(svg.includes(`fill="${color}"`))
+})
+
+Deno.test('QRCode - defaultColor and defaultBackground are defined', () => {
+  assertEquals(QRCode.defaultColor, '#000000')
+  assertEquals(QRCode.defaultBackground, '#ffffff')
 })
 
 Deno.test('QRCode - escapes special characters in logo image href', () => {
@@ -120,6 +134,27 @@ Deno.test('QRCode - generates radial gradient defs', () => {
   assert(svg.includes('stop-color="#ff0000"'))
 })
 
+Deno.test('QRCode - gradient stop offset and color escaped in defs', () => {
+  const svg = QRCode.toSVG({
+    value: 'test',
+    size: 100,
+    color: {
+      type: 'linear',
+      stops: [
+        { offset: 0, color: '#f00' },
+        { offset: 0.5, color: '#0f0' },
+        { offset: 1, color: '#00f' }
+      ]
+    }
+  })
+  assert(svg.includes('stop-color="#f00"'))
+  assert(svg.includes('stop-color="#0f0"'))
+  assert(svg.includes('stop-color="#00f"'))
+  assert(svg.includes('offset="0"'))
+  assert(svg.includes('offset="0.5"'))
+  assert(svg.includes('offset="1"'))
+})
+
 Deno.test('QRCode - gradient with empty stops array falls back to defaultColor', () => {
   const svg = QRCode.toSVG({
     value: 'test',
@@ -140,27 +175,6 @@ Deno.test('QRCode - gradient with one stop and missing color falls back to defau
     }
   })
   assert(svg.includes(`fill="${QRCode.defaultColor}"`))
-})
-
-Deno.test('QRCode - gradient stop offset and color escaped in defs', () => {
-  const svg = QRCode.toSVG({
-    value: 'test',
-    size: 100,
-    color: {
-      type: 'linear',
-      stops: [
-        { offset: 0, color: '#f00' },
-        { offset: 0.5, color: '#0f0' },
-        { offset: 1, color: '#00f' }
-      ]
-    }
-  })
-  assert(svg.includes('stop-color="#f00"'))
-  assert(svg.includes('stop-color="#0f0"'))
-  assert(svg.includes('stop-color="#00f"'))
-  assert(svg.includes('offset="0"'))
-  assert(svg.includes('offset="0.5"'))
-  assert(svg.includes('offset="1"'))
 })
 
 Deno.test('QRCode - includes logo image', () => {
@@ -205,6 +219,21 @@ Deno.test('QRCode - linear gradient custom x1 y1 x2 y2 appear in output', () => 
   assert(svg.includes('y1="0.2"'))
   assert(svg.includes('x2="0.9"'))
   assert(svg.includes('y2="0.8"'))
+})
+
+Deno.test('QRCode - logo with both text and image includes both in SVG', () => {
+  const svg = QRCode.toSVG({
+    value: 'test',
+    size: 200,
+    logo: {
+      text: 'X',
+      image: 'data:image/png;base64,abc',
+      size: 60
+    }
+  })
+  assert(svg.includes('<text'))
+  assert(svg.includes('<image'))
+  assert(svg.includes('xlink:href="data:image/png;base64,abc"'))
 })
 
 Deno.test('QRCode - logo with empty string text does not add text element', () => {
@@ -282,6 +311,64 @@ Deno.test('QRCode - radial gradient without fx fy omits focus attributes', () =>
   assert(!svg.includes('fy="'))
 })
 
+Deno.test('QRCode - radial gradient custom cx cy r appear in output', () => {
+  const svg = QRCode.toSVG({
+    value: 'test',
+    size: 100,
+    color: {
+      type: 'radial',
+      cx: 0.3,
+      cy: 0.4,
+      r: 0.5,
+      stops: [
+        { offset: 0, color: '#000' },
+        { offset: 1, color: '#fff' }
+      ]
+    }
+  })
+  assert(svg.includes('cx="0.3"'))
+  assert(svg.includes('cy="0.4"'))
+  assert(svg.includes('r="0.5"'))
+})
+
+Deno.test('QRCode - renderToCanvas accepts error level option', () => {
+  const fillRectCalls: { x: number; y: number; w: number; h: number }[] = []
+  const ctx = {
+    fillStyle: '',
+    fillRect(_x: number, _y: number, _w: number, _h: number): void {
+      fillRectCalls.push({ x: _x, y: _y, w: _w, h: _h })
+    }
+  } as unknown as CanvasRenderingContext2D
+  QRCode.renderToCanvas(ctx, { value: 'x', cellSize: 2, error: { level: 'L' } })
+  assert(fillRectCalls.length >= 21 * 21)
+})
+
+Deno.test('QRCode - renderToCanvas draws modules to context', () => {
+  const fillRectCalls: { x: number; y: number; w: number; h: number }[] = []
+  const ctx = {
+    fillStyle: '',
+    fillRect(x: number, y: number, w: number, h: number): void {
+      fillRectCalls.push({ x, y, w, h })
+    }
+  } as unknown as CanvasRenderingContext2D
+  QRCode.renderToCanvas(ctx, { value: 'x', cellSize: 2 })
+  assert(fillRectCalls.length >= 21 * 21)
+  assert(fillRectCalls.some((c) => c.w === 2 && c.h === 2))
+})
+
+Deno.test('QRCode - renderToCanvas with omitted cellSize uses default', () => {
+  const fillRectCalls: { w: number; h: number }[] = []
+  const ctx = {
+    fillStyle: '',
+    fillRect(_x: number, _y: number, w: number, h: number): void {
+      fillRectCalls.push({ w, h })
+    }
+  } as unknown as CanvasRenderingContext2D
+  QRCode.renderToCanvas(ctx, { value: 'x' })
+  assert(fillRectCalls.length >= 21 * 21)
+  assert(fillRectCalls.some((c) => c.w === 2 && c.h === 2))
+})
+
 Deno.test('QRCode - small size produces valid output', () => {
   const result = QRCode.toPath({ value: 'x', size: 21 })
   assert(result.path.startsWith('M'))
@@ -290,6 +377,74 @@ Deno.test('QRCode - small size produces valid output', () => {
   const svg = QRCode.toSVG({ value: 'x', size: 21 })
   assert(svg.includes('width="21"'))
   assert(svg.includes('height="21"'))
+})
+
+Deno.test('QRCode - toASCII accepts error level option', () => {
+  const asciiL = QRCode.toASCII({ value: 'test', cellSize: 1, error: { level: 'L' } })
+  const asciiH = QRCode.toASCII({ value: 'test', cellSize: 1, error: { level: 'H' } })
+  assert(asciiL.length > 0)
+  assert(asciiH.length > 0)
+  assert(asciiL.includes('\n'))
+  assert(asciiH.includes('\n'))
+})
+
+Deno.test('QRCode - toASCII returns string with newlines and block characters', () => {
+  const ascii = QRCode.toASCII({ value: 'test', cellSize: 1 })
+  assert(ascii.length > 0)
+  assert(ascii.includes('\n'))
+  const withMargin = QRCode.toASCII({ value: 'x', cellSize: 2, margin: 4 })
+  assert(withMargin.includes('\n'))
+  assert(withMargin.length > 10)
+})
+
+Deno.test('QRCode - toASCII with omitted cellSize and margin returns valid string', () => {
+  const ascii = QRCode.toASCII({ value: 'test' })
+  assert(ascii.length > 0)
+  assert(ascii.includes('\n'))
+})
+
+Deno.test('QRCode - toDataURL accepts error and margin options', () => {
+  const url = QRCode.toDataURL({ value: 'test', cellSize: 2, error: { level: 'M' }, margin: 8 })
+  assert(url.startsWith('data:image/gif;base64,'))
+  assert(url.length > 24)
+})
+
+Deno.test('QRCode - toDataURL returns GIF data URI', () => {
+  const url = QRCode.toDataURL({ value: 'test', cellSize: 2 })
+  assert(url.startsWith('data:image/gif;base64,'))
+  assert(url.length > 24)
+  const b64 = url.replace('data:image/gif;base64,', '')
+  const binary = atob(b64)
+  assert(binary.startsWith('GIF87a'))
+})
+
+Deno.test('QRCode - toDataURL with omitted cellSize and margin returns valid GIF', () => {
+  const url = QRCode.toDataURL({ value: 'test' })
+  assert(url.startsWith('data:image/gif;base64,'))
+  assert(url.length > 24)
+  const b64 = url.replace('data:image/gif;base64,', '')
+  const binary = atob(b64)
+  assert(binary.startsWith('GIF87a'))
+})
+
+Deno.test('QRCode - toPath accepts error level option', () => {
+  const resultL = QRCode.toPath({ value: 'test', size: 100, error: { level: 'L' } })
+  const resultH = QRCode.toPath({ value: 'test', size: 100, error: { level: 'H' } })
+  assert(resultL.path.startsWith('M'))
+  assert(resultH.path.startsWith('M'))
+  assert(resultL.cellSize > 0)
+  assert(resultH.cellSize > 0)
+})
+
+Deno.test('QRCode - toPath accepts logo radius option', () => {
+  const result = QRCode.toPath({
+    value: 'test',
+    size: 200,
+    logo: { size: 60, radius: 8, text: 'X' }
+  })
+  assert(result.path.startsWith('M'))
+  assert(result.path.length > 0)
+  assert(result.cellSize > 0)
 })
 
 Deno.test('QRCode - toPath cellSize scales with size', () => {
@@ -314,6 +469,13 @@ Deno.test('QRCode - toPath is deterministic for same options', () => {
   const opts = { value: 'deterministic', size: 300 }
   assertEquals(QRCode.toPath(opts).path, QRCode.toPath(opts).path)
   assertEquals(QRCode.toPath(opts).cellSize, QRCode.toPath(opts).cellSize)
+})
+
+Deno.test('QRCode - toPath omitted error level matches explicit H', () => {
+  const withDefault = QRCode.toPath({ value: 'level', size: 100 })
+  const withH = QRCode.toPath({ value: 'level', size: 100, error: { level: 'H' } })
+  assertEquals(withDefault.path, withH.path)
+  assertEquals(withDefault.cellSize, withH.cellSize)
 })
 
 Deno.test('QRCode - toPath path changes based on value', () => {
@@ -343,6 +505,18 @@ Deno.test('QRCode - toPath returns raw path and correct cellSize', () => {
   assertEquals(result.cellSize, size / 21)
 })
 
+Deno.test('QRCode - toPath with finder gap and module gap produces valid path', () => {
+  const result = QRCode.toPath({
+    value: 'test',
+    size: 100,
+    finder: { gap: 2 },
+    module: { gap: 1 }
+  })
+  assert(result.path.startsWith('M'))
+  assert(result.path.length > 10)
+  assert(result.cellSize > 0)
+})
+
 Deno.test('QRCode - toSVG with logo image adds xmlns xlink', () => {
   const svg = QRCode.toSVG({
     value: 'test',
@@ -356,6 +530,27 @@ Deno.test('QRCode - toSVG with logo image adds xmlns xlink', () => {
 Deno.test('QRCode - toSVG without logo image omits xmlns xlink', () => {
   const svg = QRCode.toSVG({ value: 'test', size: 100 })
   assert(!svg.includes('xmlns:xlink'))
+})
+
+Deno.test('QRCode - toTableTag accepts error and margin options', () => {
+  const html = QRCode.toTableTag({ value: 'test', cellSize: 2, error: { level: 'Q' }, margin: 4 })
+  assert(html.includes('<table'))
+  assert(html.includes('<tr>'))
+  assert(html.includes('<td'))
+})
+
+Deno.test('QRCode - toTableTag returns table HTML', () => {
+  const html = QRCode.toTableTag({ value: 'test', cellSize: 2 })
+  assert(html.includes('<table'))
+  assert(html.includes('<tr>'))
+  assert(html.includes('<td'))
+})
+
+Deno.test('QRCode - toTableTag with omitted cellSize and margin returns table', () => {
+  const html = QRCode.toTableTag({ value: 'test' })
+  assert(html.includes('<table'))
+  assert(html.includes('<tr>'))
+  assert(html.includes('<td'))
 })
 
 Deno.test('QRCode - unicode value produces valid SVG', () => {

@@ -1,7 +1,7 @@
 {
   "name": "@neabyte/qr-generator",
   "description": "QR code SVG generator with custom shapes, gradients, logo",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "type": "module",
   "license": "MIT",
   "exports": "./src/index.ts",
@@ -84,13 +84,13 @@
   },
   "tasks": {
     "check": "deno fmt src/ && deno lint src/ && deno check src/",
-    "test": "deno fmt tests/ && deno lint tests/ && deno test --no-check"
+    "test": "deno fmt tests/ && deno lint tests/ && deno test --no-check --allow-read"
   },
   "imports": {
     "@std/assert": "jsr:@std/assert@^1.0.19",
+    "@neabyte/qr-generator": "./src/index.ts",
     "@app/": "./src/",
-    "@tests/": "./tests/",
-    "qrcode": "npm:qrcode@^1.5.4"
+    "@tests/": "./tests/"
   },
   "publish": {
     "exclude": [

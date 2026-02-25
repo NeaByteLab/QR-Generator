@@ -5,6 +5,31 @@ import type * as Types from '@app/Types.ts'
  * @description One module as circle, diamond, star, etc.
  */
 export class Render {
+  private static readonly shapeRegistry: Record<Types.ModuleShape, Types.ShapePathStrategy> = {
+    circle: (corners, _neighbors, cellSize, moduleGap, finderGap, eyePattern) => {
+      const { center } = corners
+      const effectiveSize = cellSize - (eyePattern ? finderGap : moduleGap)
+      return `M${center.x} ${center.y} m-${effectiveSize / 2}, 0 a${effectiveSize / 2},${
+        effectiveSize / 2
+      } 0 1,0 ${effectiveSize},0 a${effectiveSize / 2},${
+        effectiveSize / 2
+      } 0 1,0 -${effectiveSize},0`
+    },
+    diamond: (corners) => Render.#diamond(corners),
+    rounded: (corners, neighbors) => {
+      const useRadius = true
+      return Render.#roundedSquare(corners, neighbors, useRadius)
+    },
+    shuriken: (corners) => Render.#shuriken(corners),
+    square: (corners) => {
+      const { q1, q2, q3, q4 } = corners
+      return `M${q4.x} ${q4.y} H${q1.x} V${q2.y} H${q3.x} Z`
+    },
+    star: (corners, _neighbors, cellSize, moduleGap, finderGap, eyePattern) =>
+      Render.#star(corners, cellSize, finderGap, moduleGap, eyePattern),
+    triangle: (corners) => Render.#triangle(corners)
+  }
+
   /**
    * Render one module as SVG path.
    * @description Picks shape, returns path d string for cell.
@@ -26,32 +51,8 @@ export class Render {
     finderGap: number,
     eyePattern: boolean
   ): string {
-    const { q1, q2, q3, q4, center } = corners
-    const effectiveSize = cellSize - (eyePattern ? finderGap : moduleGap)
-    switch (shape) {
-      case 'circle':
-        return `M${center.x} ${center.y} m-${effectiveSize / 2}, 0 a${effectiveSize / 2},${
-          effectiveSize / 2
-        } 0 1,0 ${effectiveSize},0 a${effectiveSize / 2},${
-          effectiveSize / 2
-        } 0 1,0 -${effectiveSize},0`
-      case 'diamond':
-        return Render.#diamond(corners)
-      case 'rounded': {
-        const useRadius = true
-        return Render.#roundedSquare(corners, neighbors, useRadius)
-      }
-      case 'shuriken':
-        return Render.#shuriken(corners)
-      case 'square':
-        return `M${q4.x} ${q4.y} H${q1.x} V${q2.y} H${q3.x} Z`
-      case 'star':
-        return Render.#star(corners, cellSize, finderGap, moduleGap, eyePattern)
-      case 'triangle':
-        return Render.#triangle(corners)
-      default:
-        return `M${q4.x} ${q4.y} H${q1.x} V${q2.y} H${q3.x} Z`
-    }
+    const strategy = Render.shapeRegistry[shape] ?? Render.shapeRegistry['square']
+    return strategy(corners, neighbors, cellSize, moduleGap, finderGap, eyePattern)
   }
 
   /**

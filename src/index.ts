@@ -1,6 +1,7 @@
 import type * as Types from '@app/Types.ts'
 import * as Matrix from '@app/Matrix.ts'
 import * as Transform from '@app/Transform.ts'
+import * as Format from '@app/core/helpers/Format.ts'
 
 /**
  * Static QR code to SVG API.
@@ -11,6 +12,47 @@ export default class QRCode {
   static readonly defaultColor = '#000000'
   /** Default background when background option omitted. */
   static readonly defaultBackground = '#ffffff'
+
+  /**
+   * Render QR into 2D canvas context.
+   * @description Encodes value and draws modules on given context.
+   * @param ctx - Canvas 2D context to draw into
+   * @param options - Value, optional error level, cell size
+   */
+  static renderToCanvas(ctx: CanvasRenderingContext2D, options: Types.FormatOptions): void {
+    const { value, error, cellSize } = options
+    const level = error?.level ?? 'H'
+    const grid = QRCode.#matrixToGrid(Matrix.Matrix.generate(value, level))
+    Format.Format.canvas(grid, ctx, cellSize)
+  }
+
+  /**
+   * Generate ASCII art string.
+   * @description Encodes value and returns terminal-style block art.
+   * @param options - Value, optional error level, cell size, margin
+   * @returns ASCII string (dark/light blocks)
+   */
+  static toASCII(options: Types.FormatOptions): string {
+    const { value, error, cellSize, margin } = options
+    const level = error?.level ?? 'H'
+    const grid = QRCode.#matrixToGrid(Matrix.Matrix.generate(value, level))
+    return Format.Format.ascii(grid, cellSize, margin)
+  }
+
+  /**
+   * Generate data URL (GIF) for image use.
+   * @description Encodes value and returns data URL for img src or download.
+   * @param options - Value, optional error level, cell size, margin
+   * @returns Data URL string (e.g. data:image/gif;base64,...)
+   */
+  static toDataURL(options: Types.FormatOptions): string {
+    const { value, error, cellSize, margin } = options
+    const level = error?.level ?? 'H'
+    const grid = QRCode.#matrixToGrid(Matrix.Matrix.generate(value, level))
+    const cs = cellSize ?? 2
+    const m = margin ?? cs * 4
+    return Format.Format.dataURL(grid, cs, m)
+  }
 
   /**
    * Build path result from QR options.
@@ -78,6 +120,41 @@ export default class QRCode {
       `<svg xmlns="http://www.w3.org/2000/svg"${xlinkNamespaceAttr} width="${svgSize}" height="${svgSize}" ` +
       `viewBox="0 0 ${svgSize} ${svgSize}">${innerSvg}</svg>`
     )
+  }
+
+  /**
+   * Generate HTML table tag string.
+   * @description Encodes value and returns table markup for QR grid.
+   * @param options - Value, optional error level, cell size, margin
+   * @returns HTML table element string
+   */
+  static toTableTag(options: Types.FormatOptions): string {
+    const { value, error, cellSize, margin } = options
+    const level = error?.level ?? 'H'
+    const grid = QRCode.#matrixToGrid(Matrix.Matrix.generate(value, level))
+    const cs = cellSize ?? 2
+    const m = margin ?? cs * 4
+    return Format.Format.table(grid, cs, m)
+  }
+
+  /**
+   * Adapter from QRMatrix to grid interface for Format helpers.
+   * @description Exposes getModuleCount and isDark for core Format APIs.
+   * @param matrix - QR module matrix (1/0)
+   * @returns Object compatible with QRModuleGrid
+   */
+  static #matrixToGrid(matrix: Types.QRMatrix): {
+    getModuleCount(): number
+    isDark(r: number, c: number): boolean
+  } {
+    return {
+      getModuleCount(): number {
+        return matrix.length
+      },
+      isDark(r: number, c: number): boolean {
+        return matrix[r]?.[c] === 1
+      }
+    }
   }
 
   /**

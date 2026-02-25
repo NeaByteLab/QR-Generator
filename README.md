@@ -1,14 +1,25 @@
-# QR-Generator [![Module type: Deno/ESM](https://img.shields.io/badge/module%20type-deno%2Fesm-brightgreen)](https://github.com/NeaByteLab/QR-Generator) [![npm version](https://img.shields.io/npm/v/@neabyte/qr-generator.svg)](https://www.npmjs.org/package/@neabyte/qr-generator) [![JSR](https://jsr.io/badges/@neabyte/qr-generator)](https://jsr.io/@neabyte/qr-generator) [![CI](https://github.com/NeaByteLab/QR-Generator/actions/workflows/ci.yaml/badge.svg)](https://github.com/NeaByteLab/QR-Generator/actions/workflows/ci.yaml) [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+# QR Generator
 
-Generates QR codes as SVG. Custom module shapes (rounded, circle, diamond, square, shuriken, star), solid or linear/radial gradient colors, optional center logo (text or image). Works with Deno (JSR) and npm.
+[![Module type: Deno/ESM](https://img.shields.io/badge/module%20type-deno%2Fesm-brightgreen)](https://github.com/NeaByteLab/QR-Generator) [![npm version](https://img.shields.io/npm/v/@neabyte/qr-generator.svg)](https://www.npmjs.org/package/@neabyte/qr-generator) [![JSR](https://jsr.io/badges/@neabyte/qr-generator)](https://jsr.io/@neabyte/qr-generator) [![CI](https://github.com/NeaByteLab/QR-Generator/actions/workflows/ci.yaml/badge.svg)](https://github.com/NeaByteLab/QR-Generator/actions/workflows/ci.yaml) [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-|            |                        No logo                         |                         Text logo                          |                        Variant                         |
-| :--------- | :----------------------------------------------------: | :--------------------------------------------------------: | :----------------------------------------------------: |
-| **Solid**  |  ![solid no logo](./preview/qrcode-solid-no-logo.svg)  |  ![solid text logo](./preview/qrcode-solid-text-logo.svg)  |     ![solid rose](./preview/qrcode-solid-rose.svg)     |
-| **Linear** | ![linear no logo](./preview/qrcode-linear-no-logo.svg) | ![linear text logo](./preview/qrcode-linear-text-logo.svg) | ![linear magenta](./preview/qrcode-linear-magenta.svg) |
-| **Radial** | ![radial no logo](./preview/qrcode-radial-no-logo.svg) | ![radial text logo](./preview/qrcode-radial-text-logo.svg) |     ![radial sky](./preview/qrcode-radial-sky.svg)     |
+Generate QR as SVG, path, GIF, ASCII, or canvas. Seven shapes (rounded, circle, diamond, square, shuriken, star, triangle), finder styling, solid or linear/radial gradients, logo (text/image). Deno (JSR) and npm.
 
-_Generate preview SVGs: `deno run --allow-write preview/generator.ts`_
+**Prerequisites:** For **Deno** use [Deno](https://deno.com/) (install from [deno.com](https://deno.com/)). For **npm** use Node.js (e.g. [nodejs.org](https://nodejs.org/)).
+
+|                 No logo                  |                  Text logo                   |                 Variant                  |
+| :--------------------------------------: | :------------------------------------------: | :--------------------------------------: |
+| ![no logo](./preview/qrcode-no-logo.gif) | ![text logo](./preview/qrcode-text-logo.gif) | ![variant](./preview/qrcode-variant.gif) |
+
+> [!IMPORTANT]
+> Generate preview assets (SVGs; GIFs if `rsvg-convert` is installed): `deno run -A preview/generator.ts`
+
+## Features
+
+- **Multiple output formats** — SVG string (`toSVG`), raw path data (`toPath`), GIF data URL (`toDataURL`), ASCII art (`toASCII`), table/img HTML (`toTableTag`, `toImgTag`), and canvas rendering (`renderToCanvas`).
+- **Finder pattern styling** — Separate shape and gap for the three corner finder patterns.
+- **Custom module shapes** — Rounded, circle, diamond, square, shuriken, star, triangle; configurable gap.
+- **Color options** — Solid color or linear/radial gradients with full control over stops and geometry.
+- **Center logo** — Text or image overlay with size and corner radius; SVG output escapes attributes.
 
 ## Installation
 
@@ -24,9 +35,9 @@ deno add jsr:@neabyte/qr-generator
 npm install @neabyte/qr-generator
 ```
 
-## Usage
+## Quick Start
 
-### Quick start
+Pass **value** (text or URL) and **size** (width/height in px). You get an SVG string.
 
 ```typescript
 import QRCode from '@neabyte/qr-generator'
@@ -37,152 +48,41 @@ const svg = QRCode.toSVG({
   color: '#000000',
   background: '#ffffff'
 })
-// Use svg string in DOM, file, or response
+// Use in HTML, save to file, or return from API
 ```
 
-### Options overview
+**Next:** [USAGE.md](USAGE.md) for all options (shapes, gradients, logo, `toPath`, etc.). [examples/README.md](examples/README.md) for runnable scripts.
 
-**SVGOptions** extends QR code options with `color` and `background`:
+## Build & Test
 
-- **value** `<string>` – Content to encode (required).
-- **size** `<number>` – Output SVG width/height in pixels (required).
-- **error** – Error correction: `{ level?: 'L' | 'M' | 'Q' | 'H' }`. Default `'H'`.
-- **finder** – Finder pattern: `{ shape?: ModuleShape; gap?: number }`. Default `{ shape: 'rounded', gap: 0 }`.
-- **module** – Data modules: `{ shape?: ModuleShape; gap?: number }`. Default `{ shape: 'rounded', gap: 0 }`.
-- **logo** – Center overlay: `{ size?: number; radius?: number; text?: string; image?: string }`.
-- **color** – Fill: solid CSS color string or gradient (see below). Default `QRCode.defaultColor` (`'#000000'`).
-- **background** – Background color. Default `QRCode.defaultBackground` (`'#ffffff'`).
+From the repo root (requires [Deno](https://deno.com/)).
 
-**Class properties:** `QRCode.defaultColor` and `QRCode.defaultBackground` are the fallback fill and background when options omit `color` or `background`. You can read them for consistency or override by passing options.
+**Check** — format, lint, and typecheck source:
 
-### Path API
-
-Use **toSVG** when you need a full SVG string. Use **toPath** when you need the raw path for custom rendering (e.g. canvas or custom SVG). It accepts **QRCodeOptions** (same as SVGOptions but without `color` or `background`) and returns **PathResult** `{ cellSize: number; path: string }`.
-
-```typescript
-const { cellSize, path } = QRCode.toPath({
-  value: 'https://neabyte.com/',
-  size: 400,
-  module: { shape: 'circle' },
-  logo: { size: 80, text: 'QR' }
-})
-// Use path (SVG path d) and cellSize for your own fill/viewBox
+```bash
+deno task check
 ```
 
-### Module shapes
+**Unit tests** — format/lint tests and run all tests:
 
-Both finder and data modules support these **ModuleShape** values:
-
-- `'circle'` – circles
-- `'diamond'` – diamonds
-- `'rounded'` – rounded squares (default)
-- `'square'` – squares
-- `'shuriken'` – four-blade shape
-- `'star'` – five-point star
-- `'triangle'` – triangles
-
-Example with different finder and module shapes:
-
-```typescript
-const svg = QRCode.toSVG({
-  value: 'https://neabyte.com/',
-  size: 500,
-  finder: { shape: 'rounded', gap: 2 },
-  module: { shape: 'circle', gap: 1 },
-  color: '#1e3a5f',
-  background: '#f8fafc'
-})
+```bash
+deno task test
 ```
 
-### Color: solid and gradients
-
-**Solid:** pass a CSS color string.
-
-```typescript
-color: '#0c4a6e'
-```
-
-**Linear gradient:** `type: 'linear'` with optional `x1`, `y1`, `x2`, `y2` (0–1, relative to the path bounding box) and `stops`.
-
-```typescript
-color: {
-  type: 'linear',
-  x1: 0, y1: 0, x2: 1, y2: 1,
-  stops: [
-    { offset: 0, color: '#0c4a6e' },
-    { offset: 1, color: '#0ea5e9' }
-  ]
-}
-```
-
-**Radial gradient:** `type: 'radial'` with optional `cx`, `cy`, `r`, `fx`, `fy` (0–1, relative to bounding box) and `stops`.
-
-```typescript
-color: {
-  type: 'radial',
-  cx: 0.5, cy: 0.5, r: 0.5,
-  stops: [
-    { offset: 0, color: '#0ea5e9' },
-    { offset: 1, color: '#0c4a6e' }
-  ]
-}
-```
-
-### Logo overlay
-
-Center logo can be text or an image. Logo area is cut out of the QR path; the logo is drawn on top.
-
-**Text logo:**
-
-```typescript
-logo: {
-  size: 120,
-  radius: 8,
-  text: '*'
-}
-```
-
-**Image logo:** base64 data URI only. URL is not supported.
-
-```typescript
-logo: { size: 100, radius: 4, image: 'data:image/png;base64,iVBORw0KGgo...' }
-```
-
-- **size** – Logo area in pixels. Default 80 when `text` or `image` is set.
-- **radius** – Corner radius of the logo cutout. Default 0.
-
-### Full example
-
-```typescript
-import QRCode, { type SVGOptions } from '@neabyte/qr-generator'
-
-const options: SVGOptions = {
-  value: 'https://neabyte.com/',
-  size: 600,
-  error: { level: 'H' },
-  finder: { shape: 'rounded', gap: 2 },
-  module: { shape: 'rounded', gap: 2 },
-  logo: { size: 200, text: '*', radius: 8 },
-  color: {
-    type: 'linear',
-    stops: [
-      { offset: 0, color: '#0c4a6e' },
-      { offset: 1, color: '#0ea5e9' }
-    ]
-  },
-  background: '#ffffff'
-}
-
-const svg = QRCode.toSVG(options)
-await Deno.writeTextFile('qrcode.svg', svg)
-```
-
-**Exported types:** `SVGOptions`, `QRCodeOptions`, `PathResult`, `ErrorLevel`, `ModuleShape`, `LinearGradient`, `RadialGradient`, `GradientStop`, `LogoOptions`, and the rest of the type set from the module. Use `import QRCode, { type SVGOptions, type PathResult } from '@neabyte/qr-generator'` (or equivalent) as needed.
+- Tests live under `tests/` (public API in `tests/qrcode.test.ts`, core helpers in `tests/core/*.test.ts`).
+- The test task uses `--allow-read` for fixtures (e.g. PNG decode tests).
 
 ## Reference
 
+- [Portable Network Graphics (PNG) Specification](https://www.w3.org/TR/png/) — W3C PNG (Third Edition); used for PNG decode in core
 - [SVG path `d` attribute](https://developer.mozilla.org/en-US/docs/Web/SVG/Tutorial/Paths) — MDN tutorial on path syntax (for `toPath()` output)
 - [react-native-qrcode-skia](https://github.com/enzomanuelmangano/react-native-qrcode-skia) — React Native QRCode Skia
+
+## Attribution & Trademark
+
+- This library is based on [qrcode-generator](https://github.com/kazuhikoarase/qrcode-generator) by Kazuhiko Arase (MIT).
+
+- The implementation follows **JIS X 0510:1999**. The word **"QR Code"** is a registered trademark of **DENSO WAVE INCORPORATED**. See: [FAQ on QR Code patents/trademarks](http://www.denso-wave.com/qrcode/faqpatent-e.html).
 
 ## License
 
