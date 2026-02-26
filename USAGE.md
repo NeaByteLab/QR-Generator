@@ -7,6 +7,27 @@ Options, shapes, gradients, logo, and output formats for `@neabyte/qr-generator`
 > [!NOTE]
 > Try the [live demo](https://neabytelab.github.io/QR-Generator) to tweak options and copy config.
 
+## Table of Contents
+
+- [Quick Start](#quick-start)
+- [Methods Overview](#methods-overview)
+  - [Pick a Method by What You Need](#pick-a-method-by-what-you-need)
+- [Options](#options)
+  - [toSVG (Full Options)](#tosvg-full-options)
+  - [Color (Solid and Gradients)](#color-solid-and-gradients)
+  - [Module and Finder Shapes](#module-and-finder-shapes)
+  - [Logo (Text or Image)](#logo-text-or-image)
+  - [toImgTag](#toimgtag)
+  - [toPath (Path Only)](#topath-path-only)
+  - [toFile](#tofile)
+  - [toFileStream](#tofilestream)
+  - [toASCII, toDataURL, toTableTag](#toascii-todataurl-totabletag)
+  - [toPNG](#topng)
+  - [toCanvas](#tocanvas)
+- [API Reference](#api-reference)
+- [Option Types](#option-types)
+- [Reference](#reference)
+
 ## Quick Start
 
 Import the default export and call a static method. Only `value` is required for most methods; `toSVG` and `toPath` also require `size`. See [examples/](examples/README.md) for runnable samples.
