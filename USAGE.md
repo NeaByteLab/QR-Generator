@@ -45,33 +45,33 @@ const svg = QRCode.toSVG({
 
 ## Methods Overview
 
-| Method                | Options              | Returns           | Description                                                               |
-| :-------------------- | :------------------- | :---------------- | :------------------------------------------------------------------------ |
-| `QRCode.toASCII`      | FormatOptions        | string            | Terminal-style block or half-block art.                                   |
-| `QRCode.toCanvas`     | (ctx, FormatOptions) | void              | Draws QR on given 2D context.                                             |
-| `QRCode.toDataURL`    | FormatOptions        | string            | `data:image/gif;base64,...`.                                              |
-| `QRCode.toFile`       | (path, SVGOptions)   | Promise\<void\>   | Writes SVG to file (or triggers download in browser).                     |
-| `QRCode.toFileStream` | (stream, SVGOptions) | Promise\<void\>   | Writes SVG to writable stream.                                            |
-| `QRCode.toImgTag`     | ImgTagOptions        | string            | HTML `<img src="data:..." alt="..." />` (GIF, optional alt/width/height). |
-| `QRCode.toPath`       | QRCodeOptions        | PathResult        | `{ cellSize, path }` for custom rendering.                                |
-| `QRCode.toPNG`        | PNGOptions           | Promise\<string\> | `data:image/png;base64,...`; optional color/background.                   |
-| `QRCode.toSVG`        | SVGOptions           | string            | Full SVG with path, fill, defs, optional logo, optional title/alt.        |
-| `QRCode.toTableTag`   | FormatOptions        | string            | HTML `<table>...</table>`.                                                |
+| Method                                               | Options              | Returns           | Description                                                               |
+| :--------------------------------------------------- | :------------------- | :---------------- | :------------------------------------------------------------------------ |
+| [`QRCode.toASCII`](#toascii-todataurl-totabletag)    | FormatOptions        | string            | Terminal-style block or half-block art.                                   |
+| [`QRCode.toCanvas`](#tocanvas)                       | (ctx, FormatOptions) | void              | Draws QR on given 2D context.                                             |
+| [`QRCode.toDataURL`](#toascii-todataurl-totabletag)  | FormatOptions        | string            | `data:image/gif;base64,...`.                                              |
+| [`QRCode.toFile`](#tofile)                           | (path, SVGOptions)   | Promise\<void\>   | Writes SVG to file (or triggers download in browser).                     |
+| [`QRCode.toFileStream`](#tofilestream)               | (stream, SVGOptions) | Promise\<void\>   | Writes SVG to writable stream.                                            |
+| [`QRCode.toImgTag`](#toimgtag)                       | ImgTagOptions        | string            | HTML `<img src="data:..." alt="..." />` (GIF, optional alt/width/height). |
+| [`QRCode.toPath`](#topath-path-only)                 | QRCodeOptions        | PathResult        | `{ cellSize, path }` for custom rendering.                                |
+| [`QRCode.toPNG`](#topng)                             | PNGOptions           | Promise\<string\> | `data:image/png;base64,...`; optional color/background.                   |
+| [`QRCode.toSVG`](#tosvg-full-options)                | SVGOptions           | string            | Full SVG with path, fill, defs, optional logo, optional title/alt.        |
+| [`QRCode.toTableTag`](#toascii-todataurl-totabletag) | FormatOptions        | string            | HTML `<table>...</table>`.                                                |
 
 ### Pick a Method by What You Need
 
-| I want to…                      | Use this              | Minimal call                                                            |
-| :------------------------------ | :-------------------- | :---------------------------------------------------------------------- |
-| Draw on my own canvas           | `QRCode.toCanvas`     | `toCanvas(ctx, { value: '…' })`                                         |
-| Get an SVG to show or save      | `QRCode.toSVG`        | `toSVG({ value: '…', size: 400 })`                                      |
-| Get GIF for `<img>` or download | `QRCode.toDataURL`    | `toDataURL({ value: '…' })`                                             |
-| Get HTML img tag (GIF, alt)     | `QRCode.toImgTag`     | `toImgTag({ value: '…', alt: 'QR code' })`                              |
-| Get HTML table                  | `QRCode.toTableTag`   | `toTableTag({ value: '…' })`                                            |
-| Get path string for custom draw | `QRCode.toPath`       | `toPath({ value: '…', size: 400 })`                                     |
-| Get PNG for `<img>` or download | `QRCode.toPNG`        | `await QRCode.toPNG({ value: '…', color: '#000', background: '#fff' })` |
-| Print QR in terminal            | `QRCode.toASCII`      | `toASCII({ value: '…' })`                                               |
-| Write SVG to file or download   | `QRCode.toFile`       | `toFile('out.svg', { value: '…', size: 400 })`                          |
-| Write SVG to a stream           | `QRCode.toFileStream` | `toFileStream(stream, { value: '…', size: 400 })`                       |
+| I want to…                      | Use this                                             | Minimal call                                                            |
+| :------------------------------ | :--------------------------------------------------- | :---------------------------------------------------------------------- |
+| Draw on my own canvas           | [`QRCode.toCanvas`](#tocanvas)                       | `toCanvas(ctx, { value: '…' })`                                         |
+| Get an SVG to show or save      | [`QRCode.toSVG`](#tosvg-full-options)                | `toSVG({ value: '…', size: 400 })`                                      |
+| Get GIF for `<img>` or download | [`QRCode.toDataURL`](#toascii-todataurl-totabletag)  | `toDataURL({ value: '…' })`                                             |
+| Get HTML img tag (GIF, alt)     | [`QRCode.toImgTag`](#toimgtag)                       | `toImgTag({ value: '…', alt: 'QR code' })`                              |
+| Get HTML table                  | [`QRCode.toTableTag`](#toascii-todataurl-totabletag) | `toTableTag({ value: '…' })`                                            |
+| Get path string for custom draw | [`QRCode.toPath`](#topath-path-only)                 | `toPath({ value: '…', size: 400 })`                                     |
+| Get PNG for `<img>` or download | [`QRCode.toPNG`](#topng)                             | `await QRCode.toPNG({ value: '…', color: '#000', background: '#fff' })` |
+| Print QR in terminal            | [`QRCode.toASCII`](#toascii-todataurl-totabletag)    | `toASCII({ value: '…' })`                                               |
+| Write SVG to file or download   | [`QRCode.toFile`](#tofile)                           | `toFile('out.svg', { value: '…', size: 400 })`                          |
+| Write SVG to a stream           | [`QRCode.toFileStream`](#tofilestream)               | `toFileStream(stream, { value: '…', size: 400 })`                       |
 
 > [!NOTE]
 > Every method needs at least `value` (the text or URL to encode). `toSVG`, `toPath`, `toFile`, and `toFileStream` also need `size` (width/height in pixels). `toASCII`, `toDataURL`, `toImgTag`, `toPNG`, and `toTableTag` use optional `cellSize` and `margin` for dimensions.
