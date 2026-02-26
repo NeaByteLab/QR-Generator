@@ -65,6 +65,19 @@ export type FormatOptions = {
 }
 
 /**
+ * Options for HTML img tag output.
+ * @description FormatOptions plus optional alt text and width/height.
+ */
+export type ImgTagOptions = FormatOptions & {
+  /** Alt text for accessibility */
+  alt?: string
+  /** Height in pixels */
+  height?: number
+  /** Width in pixels */
+  width?: number
+}
+
+/**
  * Single gradient stop (offset and color).
  * @description One stop in a gradient definition.
  */
@@ -279,8 +292,26 @@ export type ShapePathStrategy = (
   eyePattern: boolean
 ) => string
 
-/** SVG options: QR options plus color and background. */
-export type SVGOptions = QRCodeOptions & { color?: ColorOption; background?: string }
+/**
+ * SVG title or description content.
+ * @description String or object with text and optional id.
+ */
+export type SvgAccessibilityContent = string | { id?: string; text: string }
+
+/**
+ * QR options plus color, background, a11y.
+ * @description Extends QRCodeOptions with color, background, title, alt.
+ */
+export type SVGOptions = QRCodeOptions & {
+  /** Accessibility description for <desc> */
+  alt?: SvgAccessibilityContent
+  /** Background color */
+  background?: string
+  /** Foreground color or gradient */
+  color?: ColorOption
+  /** Accessibility title for <title> */
+  title?: SvgAccessibilityContent
+}
 
 /**
  * Stream-like interface for toFileStream.

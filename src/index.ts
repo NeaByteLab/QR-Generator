@@ -91,6 +91,31 @@ export default class QRCode {
   }
 
   /**
+   * Return HTML img tag with data URL.
+   * @description Encodes value and returns img element markup.
+   * @param options - Img tag options (value, layout, alt, size)
+   * @returns HTML img element string
+   */
+  static toImgTag(options: Types.ImgTagOptions): string {
+    const { value, error, cellSize, margin, alt, width, height } = options
+    const errorLevel = error?.level ?? 'H'
+    const grid = QRCode.#matrixToGrid(Matrix.Matrix.generate(value, errorLevel))
+    const effectiveCellSize = cellSize ?? 2
+    const effectiveMargin = margin ?? effectiveCellSize * 4
+    const dataURL = Helpers.Format.dataURL(grid, effectiveCellSize, effectiveMargin)
+    const imageSize = grid.getModuleCount() * effectiveCellSize + effectiveMargin * 2
+    const imgWidth = width ?? imageSize
+    const imgHeight = height ?? imageSize
+    const altText = alt ?? 'QR code'
+    const escapedAltText = altText
+      .replace(/&/g, '&amp;')
+      .replace(/"/g, '&quot;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+    return `<img src="${dataURL}" width="${imgWidth}" height="${imgHeight}" alt="${escapedAltText}" />`
+  }
+
+  /**
    * Build path result from QR options.
    * @description Matrix, shape options, then Transform.toPath.
    * @param options - QR options (value, size, error, finder, module, logo)
@@ -140,6 +165,22 @@ export default class QRCode {
     const { fill: fillColor, defs: defsMarkup } = QRCode.#resolveColor(options.color)
     const backgroundColor = options.background ?? QRCode.defaultBackground
     const logoOpts = options.logo
+    const titleSurrogate = QRCode.#toA11ySurrogate(options.title, 'qrcode-title')
+    const altSurrogate = QRCode.#toA11ySurrogate(options.alt, 'qrcode-desc')
+    const hasA11y = (titleSurrogate.text ?? altSurrogate.text) !== null
+    const ariaLabelledbyIds = [titleSurrogate.id, altSurrogate.id].filter(Boolean).join(' ').trim()
+    const a11yAttrs = hasA11y && ariaLabelledbyIds
+      ? ` role="img" aria-labelledby="${QRCode.#escapeXml(ariaLabelledbyIds)}"`
+      : ''
+    let a11yMarkup = ''
+    if (titleSurrogate.text) {
+      const idAttr = titleSurrogate.id ? ` id="${QRCode.#escapeXml(titleSurrogate.id)}"` : ''
+      a11yMarkup += `<title${idAttr}>${QRCode.#escapeXml(titleSurrogate.text)}</title>`
+    }
+    if (altSurrogate.text) {
+      const idAttr = altSurrogate.id ? ` id="${QRCode.#escapeXml(altSurrogate.id)}"` : ''
+      a11yMarkup += `<desc${idAttr}>${QRCode.#escapeXml(altSurrogate.text)}</desc>`
+    }
     const defsWrapped = defsMarkup ? `<defs>${defsMarkup}</defs>` : ''
     let innerSvg =
       `${defsWrapped}<path fill="${backgroundColor}" d="M0 0h${svgSize}v${svgSize}H0z"/>` +
@@ -175,7 +216,7 @@ export default class QRCode {
     const xlinkNamespaceAttr = hasImageLogo ? ' xmlns:xlink="http://www.w3.org/1999/xlink"' : ''
     return (
       `<svg xmlns="http://www.w3.org/2000/svg"${xlinkNamespaceAttr} width="${svgSize}" height="${svgSize}" ` +
-      `viewBox="0 0 ${svgSize} ${svgSize}">${innerSvg}</svg>`
+      `viewBox="0 0 ${svgSize} ${svgSize}"${a11yAttrs}>${a11yMarkup}${innerSvg}</svg>`
     )
   }
 
@@ -192,6 +233,20 @@ export default class QRCode {
     const cs = cellSize ?? 2
     const m = margin ?? cs * 4
     return Helpers.Format.table(grid, cs, m)
+  }
+
+  /**
+   * Escape string for XML/HTML.
+   * @description Replaces &, <, >, " with entity refs.
+   * @param rawString - String to escape for XML/HTML
+   * @returns Escaped string safe for attributes or content
+   */
+  static #escapeXml(rawString: string): string {
+    return rawString
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
   }
 
   /**
@@ -261,6 +316,28 @@ export default class QRCode {
     }
     const defsMarkup = `<radialGradient ${radialAttrs}>${gradientStopMarkup}</radialGradient>`
     return { fill: `url(#${gradientId})`, defs: defsMarkup }
+  }
+
+  /**
+   * Normalize title/alt to text and id.
+   * @description String or object to surrogate with text and id.
+   * @param accessibilityContent - Title or alt (string or object)
+   * @param defaultId - Fallback id when content has no id
+   * @returns Surrogate with id and text for SVG a11y
+   */
+  static #toA11ySurrogate(
+    accessibilityContent: Types.SvgAccessibilityContent | undefined,
+    defaultId: string
+  ): { id: string | null; text: string | null } {
+    if (accessibilityContent === undefined) {
+      return { id: null, text: null }
+    }
+    if (typeof accessibilityContent === 'string') {
+      return { id: defaultId, text: accessibilityContent }
+    }
+    const text = accessibilityContent.text ?? null
+    const id = text !== null ? (accessibilityContent.id ?? defaultId) : null
+    return { id, text }
   }
 
   /**

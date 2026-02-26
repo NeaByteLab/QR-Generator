@@ -22,8 +22,10 @@ Replace `<name>` with any script below (e.g. `basic-svg`, `formats`).
 | [png.ts](png.ts)                             | `toPNG()` data URL → decode and write `qr-default.png`, `qr-colored.png`     |
 | [shapes-all.ts](shapes-all.ts)               | All 7 module shapes → `shapes-rounded.svg` … `shapes-triangle.svg`           |
 | [shapes-and-colors.ts](shapes-and-colors.ts) | Rounded/circle, linear gradient, logo text → 4 SVGs                          |
+| [svg-a11y.ts](svg-a11y.ts)                   | `toSVG()` with title/alt → `svg-a11y.svg` (role, <title>, <desc>)            |
 | [to-file-stream.ts](to-file-stream.ts)       | `toFileStream(stream, SVGOptions)` → `to-file-stream.svg`                    |
 | [to-file.ts](to-file.ts)                     | `toFile(path, SVGOptions)` → `to-file.svg`                                   |
+| [to-img-tag.ts](to-img-tag.ts)               | `toImgTag()` default and custom alt/size → `qr-img.html`                     |
 
 All scripts use `import QRCode from '@neabyte/qr-generator'` (resolved via `deno.json` when run locally).
 

@@ -2,7 +2,7 @@
 
 # QR Generator
 
-Generate QR codes as SVG, path, GIF, PNG, ASCII, or canvas with custom shapes, gradients, and logo.
+Generate QR codes in SVG, path, GIF, PNG, ASCII, or canvas. Custom shapes, gradients, logo.
 
 [![Node](https://img.shields.io/badge/node-%3E%3D20-339933?logo=node.js&logoColor=white)](https://nodejs.org) [![Deno](https://img.shields.io/badge/deno-compatible-ffcb00?logo=deno&logoColor=000000)](https://deno.com) [![Bun](https://img.shields.io/badge/bun-compatible-f9f1e1?logo=bun&logoColor=000000)](https://bun.sh) [![Browser](https://img.shields.io/badge/browser-compatible-4285F4?logo=googlechrome&logoColor=white)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
 
@@ -27,6 +27,7 @@ Generate QR codes as SVG, path, GIF, PNG, ASCII, or canvas with custom shapes, g
   - Raw path data (`toPath`)
   - SVG string (`toSVG`)
   - Table/img HTML (`toTableTag`, `toImgTag`)
+- **Accessibility** — `toImgTag` accepts `alt` (default `'QR code'`); `toSVG` accepts optional `title` and `alt` for `<title>`, `<desc>`, `role="img"`, and `aria-labelledby`.
 - **Finder pattern styling** — Separate shape and gap for the three corner finder patterns.
 - **Custom module shapes** — Rounded, circle, diamond, square, shuriken, star, triangle; configurable gap.
 - **Color options** — Solid color or linear/radial gradients with full control over stops and geometry.

@@ -24,17 +24,18 @@ const svg = QRCode.toSVG({
 
 ## Methods Overview
 
-| Method                | Options              | Returns           | Description                                             |
-| :-------------------- | :------------------- | :---------------- | :------------------------------------------------------ |
-| `QRCode.toASCII`      | FormatOptions        | string            | Terminal-style block or half-block art.                 |
-| `QRCode.toCanvas`     | (ctx, FormatOptions) | void              | Draws QR on given 2D context.                           |
-| `QRCode.toDataURL`    | FormatOptions        | string            | `data:image/gif;base64,...`.                            |
-| `QRCode.toFile`       | (path, SVGOptions)   | Promise\<void\>   | Writes SVG to file (or triggers download in browser).   |
-| `QRCode.toFileStream` | (stream, SVGOptions) | Promise\<void\>   | Writes SVG to writable stream.                          |
-| `QRCode.toPath`       | QRCodeOptions        | PathResult        | `{ cellSize, path }` for custom rendering.              |
-| `QRCode.toPNG`        | PNGOptions           | Promise\<string\> | `data:image/png;base64,...`; optional color/background. |
-| `QRCode.toSVG`        | SVGOptions           | string            | Full SVG with path, fill, defs, optional logo.          |
-| `QRCode.toTableTag`   | FormatOptions        | string            | HTML `<table>...</table>`.                              |
+| Method                | Options              | Returns           | Description                                                               |
+| :-------------------- | :------------------- | :---------------- | :------------------------------------------------------------------------ |
+| `QRCode.toASCII`      | FormatOptions        | string            | Terminal-style block or half-block art.                                   |
+| `QRCode.toCanvas`     | (ctx, FormatOptions) | void              | Draws QR on given 2D context.                                             |
+| `QRCode.toDataURL`    | FormatOptions        | string            | `data:image/gif;base64,...`.                                              |
+| `QRCode.toFile`       | (path, SVGOptions)   | Promise\<void\>   | Writes SVG to file (or triggers download in browser).                     |
+| `QRCode.toFileStream` | (stream, SVGOptions) | Promise\<void\>   | Writes SVG to writable stream.                                            |
+| `QRCode.toImgTag`     | ImgTagOptions        | string            | HTML `<img src="data:..." alt="..." />` (GIF, optional alt/width/height). |
+| `QRCode.toPath`       | QRCodeOptions        | PathResult        | `{ cellSize, path }` for custom rendering.                                |
+| `QRCode.toPNG`        | PNGOptions           | Promise\<string\> | `data:image/png;base64,...`; optional color/background.                   |
+| `QRCode.toSVG`        | SVGOptions           | string            | Full SVG with path, fill, defs, optional logo, optional title/alt.        |
+| `QRCode.toTableTag`   | FormatOptions        | string            | HTML `<table>...</table>`.                                                |
 
 ### Pick a Method by What You Need
 
@@ -43,6 +44,7 @@ const svg = QRCode.toSVG({
 | Draw on my own canvas           | `QRCode.toCanvas`     | `toCanvas(ctx, { value: '…' })`                                         |
 | Get an SVG to show or save      | `QRCode.toSVG`        | `toSVG({ value: '…', size: 400 })`                                      |
 | Get GIF for `<img>` or download | `QRCode.toDataURL`    | `toDataURL({ value: '…' })`                                             |
+| Get HTML img tag (GIF, alt)     | `QRCode.toImgTag`     | `toImgTag({ value: '…', alt: 'QR code' })`                              |
 | Get HTML table                  | `QRCode.toTableTag`   | `toTableTag({ value: '…' })`                                            |
 | Get path string for custom draw | `QRCode.toPath`       | `toPath({ value: '…', size: 400 })`                                     |
 | Get PNG for `<img>` or download | `QRCode.toPNG`        | `await QRCode.toPNG({ value: '…', color: '#000', background: '#fff' })` |
@@ -51,13 +53,13 @@ const svg = QRCode.toSVG({
 | Write SVG to a stream           | `QRCode.toFileStream` | `toFileStream(stream, { value: '…', size: 400 })`                       |
 
 > [!NOTE]
-> Every method needs at least `value` (the text or URL to encode). `toSVG`, `toPath`, `toFile`, and `toFileStream` also need `size` (width/height in pixels). `toASCII`, `toDataURL`, `toPNG`, and `toTableTag` use optional `cellSize` and `margin` for dimensions.
+> Every method needs at least `value` (the text or URL to encode). `toSVG`, `toPath`, `toFile`, and `toFileStream` also need `size` (width/height in pixels). `toASCII`, `toDataURL`, `toImgTag`, `toPNG`, and `toTableTag` use optional `cellSize` and `margin` for dimensions.
 
 ## Options
 
 ### toSVG (Full Options)
 
-`toSVG` accepts **SVGOptions**: required `value` and `size`; optional `color`, `background`, `error`, `finder`, `module`, `logo`. Error level defaults to `'H'`. Module and finder default to `shape: 'rounded'`, `gap: 0`.
+`toSVG` accepts **SVGOptions**: required `value` and `size`; optional `alt`, `background`, `color`, `error`, `finder`, `module`, `logo`, `title`. Error level defaults to `'H'`. Module and finder default to `shape: 'rounded'`, `gap: 0`. Optional `title` and `alt` add accessibility: `<title>`, `<desc>`, `role="img"`, and `aria-labelledby`.
 
 ```typescript
 const svg = QRCode.toSVG({
@@ -145,6 +147,22 @@ QRCode.toSVG({
   value: 'https://example.com',
   size: 400,
   logo: { size: 80, image: 'data:image/png;base64,...' }
+})
+```
+
+### toImgTag
+
+Returns an HTML `<img>` element string with GIF data URL. Uses **ImgTagOptions**: required `value`; optional `error`, `cellSize`, `margin`, `alt` (default `'QR code'`), `width`, `height`. When `width` or `height` are omitted, dimensions are derived from the QR grid.
+
+```typescript
+const img = QRCode.toImgTag({ value: 'https://example.com', alt: 'Scan to open link' })
+const imgCustom = QRCode.toImgTag({
+  value: 'https://example.com',
+  cellSize: 2,
+  margin: 8,
+  alt: 'Event ticket',
+  width: 256,
+  height: 256
 })
 ```
 
@@ -270,6 +288,13 @@ Use when you want to write the SVG to a writable stream (e.g. Node `Writable`, o
 - `options` `<SVGOptions>`: Same as `toSVG`.
 - Returns: `<Promise<void>>`.
 
+### QRCode.toImgTag(options)
+
+Use when you need an HTML `<img>` element string with GIF data URL and optional alt and dimensions.
+
+- `options` `<ImgTagOptions>`: `value` (required), `error?`, `cellSize?`, `margin?`, `alt?` (default `'QR code'`), `width?`, `height?`.
+- Returns: `<string>` HTML img element. Dimensions default to derived from grid when omitted.
+
 ### QRCode.toPath(options)
 
 Use when you need the raw path and cell size (e.g. custom SVG, canvas, or Skia).
@@ -290,9 +315,9 @@ Use when you need a PNG data URL for `<img src="…">` or for download, with opt
 
 Use when you need a full SVG string (e.g. inject in HTML, save as `.svg`, or send from API).
 
-- `options` `<SVGOptions>`: `value` (required), `size` (required), `color?`, `background?`, `error?`, `finder?`, `module?`, `logo?`.
+- `options` `<SVGOptions>`: `value` (required), `size` (required), `alt?`, `color?`, `background?`, `error?`, `finder?`, `module?`, `logo?`, `title?`.
 - Returns: `<string>` SVG document.
-- Builds path via toPath, resolves color (solid or gradient defs), adds background rect, path, and optional text/image logo. Background defaults to `QRCode.defaultBackground` (`#ffffff`) when omitted.
+- Builds path via toPath, resolves color (solid or gradient defs), adds background rect, path, and optional text/image logo. When `title` or `alt` are set, adds `<title>`, `<desc>`, `role="img"`, and `aria-labelledby`. Background defaults to `QRCode.defaultBackground` (`#ffffff`) when omitted.
 
 ### QRCode.toTableTag(options)
 
@@ -303,18 +328,20 @@ Use when you need an HTML `<table>` snippet (e.g. email or legacy layout).
 
 ## Option Types
 
-Types are exported for TypeScript: `import type { ColorOption, FormatOptions, PathResult, PNGOptions, QRCodeOptions, SVGOptions, WritableStreamLike } from '@neabyte/qr-generator'`.
+Types are exported for TypeScript: `import type { ColorOption, FormatOptions, ImgTagOptions, PathResult, PNGOptions, QRCodeOptions, SVGOptions, SvgAccessibilityContent, WritableStreamLike } from '@neabyte/qr-generator'`.
 
 - **ColorOption:** `<string>` | **LinearGradient** | **RadialGradient**. **GradientStop:** `offset` (0–1), `color` `<string>`.
 - **ErrorOptions:** `level?` `<ErrorLevel>`. **ErrorLevel:** `'L' | 'M' | 'Q' | 'H'`.
 - **FinderOptions / ModuleOptions:** `shape?` `<ModuleShape>`, `gap?` `<number>`.
 - **FormatOptions:** `value` `<string>`, `error?` `<ErrorOptions>`, `cellSize?` `<number>`, `margin?` `<number>`.
+- **ImgTagOptions:** FormatOptions & `alt?` `<string>`, `width?` `<number>`, `height?` `<number>`.
 - **LogoOptions:** `size?` `<number>`, `radius?` `<number>`, `text?` `<string>`, `image?` `<string>`.
 - **ModuleShape:** `'circle' | 'diamond' | 'rounded' | 'square' | 'shuriken' | 'star' | 'triangle'`.
 - **PathResult:** `cellSize` `<number>`, `path` `<string>`.
 - **PNGOptions:** FormatOptions & `color?` `<string>`, `background?` `<string>` (hex e.g. `#000`, `#fff`). Used by `toPNG`.
 - **QRCodeOptions:** `value` `<string>`, `size` `<number>`, `error?`, `finder?` `<FinderOptions>`, `module?` `<ModuleOptions>`, `logo?` `<LogoOptions>`.
-- **SVGOptions:** QRCodeOptions & `color?` `<ColorOption>`, `background?` `<string>`.
+- **SVGOptions:** QRCodeOptions & `alt?` `<SvgAccessibilityContent>`, `color?` `<ColorOption>`, `background?` `<string>`, `title?` `<SvgAccessibilityContent>`.
+- **SvgAccessibilityContent:** `<string>` or `{ text: string, id?: string }` for SVG `<title>`/`<desc>` and `aria-labelledby`.
 - **WritableStreamLike:** `write(data: string | Uint8Array): void | Promise<void>`, `end?(): void | Promise<void>` (for `toFileStream`).
 
 ## Reference
